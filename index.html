@@ -117,11 +117,11 @@
         <div id="theme-library" class="theme-library" aria-label="Theme library"></div>
       </details>
       <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-palette"/></svg>Custom colors</span></summary>
-        <div class="setting-row color-row"><label for="color-background">Background</label><div class="color-inputs"><input id="swatch-background" type="color" aria-label="Pick background color"><input id="color-background" type="text" aria-label="Background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-time">Time</label><div class="color-inputs"><input id="swatch-time" type="color" aria-label="Pick time color"><input id="color-time" type="text" aria-label="Time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-details">Date & city</label><div class="color-inputs"><input id="swatch-details" type="color" aria-label="Pick date and city color"><input id="color-details" type="text" aria-label="Date and city hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-tile">Tile background</label><div class="color-inputs"><input id="swatch-tile" type="color" aria-label="Pick tile background color"><input id="color-tile" type="text" aria-label="Tile background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-tileText">Tile time</label><div class="color-inputs"><input id="swatch-tileText" type="color" aria-label="Pick tile time color"><input id="color-tileText" type="text" aria-label="Tile time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-background">Background</label><div class="color-inputs"><button id="swatch-background" class="color-swatch" aria-label="Pick background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-background" type="text" aria-label="Background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-time">Time</label><div class="color-inputs"><button id="swatch-time" class="color-swatch" aria-label="Pick time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-time" type="text" aria-label="Time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-details">Date & city</label><div class="color-inputs"><button id="swatch-details" class="color-swatch" aria-label="Pick date and city color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-details" type="text" aria-label="Date and city hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-tile">Tile background</label><div class="color-inputs"><button id="swatch-tile" class="color-swatch" aria-label="Pick tile background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tile" type="text" aria-label="Tile background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-tileText">Tile time</label><div class="color-inputs"><button id="swatch-tileText" class="color-swatch" aria-label="Pick tile time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tileText" type="text" aria-label="Tile time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
         <p id="color-contrast" class="color-note" role="status"></p>
         <button id="reset-colors" class="text-button">Reset colors</button>
       </details>
@@ -160,6 +160,22 @@
           <p>City data by <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Map data by <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Font license: <a href="./assets/fonts/OFL.txt" target="_blank" rel="noopener noreferrer">SIL OFL 1.1</a>.</p>
         </details>
       </section>
+    </div>
+  </dialog>
+
+  <dialog id="color-dialog" class="color-dialog" aria-labelledby="color-picker-title">
+    <div class="color-picker-heading"><h2 id="color-picker-title">Color</h2><button class="icon-button" data-close="color-dialog" aria-label="Close color picker"><svg><use href="#i-close"/></svg></button></div>
+    <div class="color-picker-content">
+      <div id="color-plane" class="color-plane" aria-hidden="true"><span id="color-cursor"></span></div>
+      <div class="picker-slider-row"><label for="picker-hue">Hue</label><output id="picker-hue-value" for="picker-hue"></output></div>
+      <input id="picker-hue" class="picker-slider hue-slider" type="range" min="0" max="360" step="1" autofocus>
+      <div class="picker-adjustments">
+        <div><div class="picker-slider-row"><label for="picker-saturation">Saturation</label><output id="picker-saturation-value" for="picker-saturation"></output></div><input id="picker-saturation" class="picker-slider" type="range" min="0" max="100" step="1"></div>
+        <div><div class="picker-slider-row"><label for="picker-brightness">Brightness</label><output id="picker-brightness-value" for="picker-brightness"></output></div><input id="picker-brightness" class="picker-slider" type="range" min="0" max="100" step="1"></div>
+      </div>
+      <div class="picker-hex-row"><span id="picker-preview" aria-hidden="true"></span><label for="picker-hex">Hex</label><input id="picker-hex" type="text" maxlength="7" spellcheck="false" autocomplete="off" aria-describedby="picker-error"></div>
+      <p id="picker-error" class="picker-error" role="status"></p>
+      <div class="picker-actions"><button id="picker-restore" class="text-button">Undo changes</button><button class="primary-button" data-close="color-dialog">Done</button></div>
     </div>
   </dialog>
 

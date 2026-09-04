@@ -58,3 +58,12 @@ test('crawler files name only public canonical pages', async () => {
     'https://bareclock.vercel.app/about/',
   ]);
 });
+
+test('custom colors use the themed picker and cache its module offline', async () => {
+  const [html, worker] = await Promise.all([read('index.html'), read('sw.js')]);
+  assert.equal(/type="color"/.test(html), false);
+  assert.match(html, /id="color-dialog"[^>]+aria-labelledby="color-picker-title"/);
+  assert.match(html, /id="picker-hue"[^>]+type="range"/);
+  assert.match(html, /id="picker-hex"[^>]+type="text"/);
+  assert.match(worker, /['"]\.\/color-picker\.js['"]/);
+});

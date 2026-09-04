@@ -1,5 +1,6 @@
 import { localZone, uses12Hours, timeAt, dateAt, relativeDay, nextTickDelay, normalizePreferences, sameCity, swapWorldCity, isDeviceCity, zoneOffsetMinutes, solarMapGeometry } from './time.js';
 import { palettes, themeCatalog, matchingTheme, displayColors, controlColor, contrast, mix, validColor } from './appearance.js';
+import { createColorPicker } from './color-picker.js';
 import { cityCatalog, searchCities, zoneName } from './cities.js';
 
 const $ = id => document.getElementById(id);
@@ -143,7 +144,7 @@ function syncAppearance() {
     root.style.setProperty(`--display-${key}`, value);
     const input = $(`color-${key}`);
     if (document.activeElement !== input) input.value = value;
-    $(`swatch-${key}`).value = value;
+    $(`swatch-${key}`).style.setProperty('--swatch-color', value);
   }
   root.style.setProperty('--display-control', controlColor(colors.background, prefs.controls === 'subtle' ? 3.2 : 4.5));
   root.style.setProperty('--display-hover', mix(colors.background, colors.time, .08));
@@ -302,9 +303,10 @@ function stackFace(time) {
   wrap.append(el('span', 'stack-number', time.hour));
   const lower = el('span', 'stack-lower');
   lower.append(el('span', 'stack-number', time.minute));
-  if (prefs.seconds) lower.append(el('span', 'stack-seconds', time.second));
-  if (time.period) lower.append(el('span', 'face-period stack-period', time.period));
-  wrap.append(lower);
+  const details = el('span', 'stack-meta');
+  if (prefs.seconds) details.append(el('span', 'stack-seconds', time.second));
+  if (time.period) details.append(el('span', 'face-period stack-period', time.period));
+  wrap.append(lower, details);
   return wrap;
 }
 
@@ -805,6 +807,15 @@ $('city-dialog').addEventListener('close', () => {
   workerIdleTimer = setTimeout(() => { if (cityWorker) cityWorker.terminate(); cityWorker = null; directoryReady = false; }, 30000);
 });
 $('clock-size').addEventListener('input', event => update('clockSize', Number(event.target.value)));
+let colorPickerReturn = '';
+const colorPicker = createColorPicker($('color-dialog'), (key, value) => update('colors', { ...prefs.colors, [key]: value }));
+$('color-dialog').addEventListener('close', () => {
+  if (!colorPickerReturn) return;
+  const swatch = $(`swatch-${colorPickerReturn}`);
+  colorPickerReturn = '';
+  $('settings-dialog').showModal();
+  swatch.focus();
+});
 for (const key of Object.keys(palettes.dark)) {
   const input = $(`color-${key}`);
   input.addEventListener('change', () => {
@@ -819,7 +830,13 @@ for (const key of Object.keys(palettes.dark)) {
     if (validColor(value)) update('colors', { ...prefs.colors, [key]: value.toLowerCase() });
   });
   input.addEventListener('blur', () => { input.value = displayColors(prefs)[key]; input.setCustomValidity(''); });
-  $(`swatch-${key}`).addEventListener('input', event => update('colors', { ...prefs.colors, [key]: event.target.value }));
+  $(`swatch-${key}`).addEventListener('click', () => {
+    const label = { background: 'Background', time: 'Time', details: 'Date & city', tile: 'Tile background', tileText: 'Tile time' }[key];
+    colorPickerReturn = key;
+    if ($('settings-dialog').open) $('settings-dialog').close();
+    colorPicker.open(key, displayColors(prefs)[key], `${label} color`);
+    showControls();
+  });
 }
 document.querySelectorAll('[data-theme-filter]').forEach(button => button.addEventListener('click', () => {
   const filter = button.dataset.themeFilter;
