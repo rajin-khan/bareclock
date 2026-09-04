@@ -1,0 +1,11 @@
+{
+  "source": "https://download.geonames.org/export/dump/cities500.zip",
+  "license": "CC BY 4.0",
+  "scope": "GeoNames cities with population over 500 or administrative seats through PPLA4; records with a timezone",
+  "cityCount": 235669,
+  "countryCount": 246,
+  "timezoneCount": 394,
+  "sourceSha256": "a7c0b85bb699e55a1c258fe91cb5fd5a60871fc6467c6f8fc0955b6eeda5a84a",
+  "jsonBytes": 22798098,
+  "gzipBytes": 10298858
+}

@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#08090b">
+  <meta name="description" content="A free online clock with fullscreen, world clocks, flip and digital styles, and 24 themes. Set your colors, open a tab, and keep time in view. No account needed.">
+  <meta name="author" content="Rajin Khan">
+  <meta property="og:title" content="bareclock | A clock for your browser">
+  <meta property="og:description" content="A simple fullscreen clock with world clocks, themes, and custom colors.">
+  <meta property="og:type" content="website">
+  <title>bareclock | Free Online Clock &amp; World Clocks</title>
+  <link rel="canonical" href="https://bareclock.com/">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta property="og:site_name" content="bareclock">
+  <meta property="og:url" content="https://bareclock.com/">
+  <meta property="og:image" content="https://bareclock.com/assets/og/bareclock.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="bareclock showing 12:48 on a dark background.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="bareclock | A clock for your browser">
+  <meta name="twitter:description" content="A free fullscreen clock with world clocks, flip and digital styles, and 24 themes. No account needed.">
+  <meta name="twitter:image" content="https://bareclock.com/assets/og/bareclock.png">
+  <meta name="twitter:image:alt" content="bareclock showing 12:48 on a dark background.">
+  <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"bareclock","url":"https://bareclock.com/","description":"A free online clock with fullscreen, world clocks, flip and digital styles, and customizable themes.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and a modern web browser.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Rajin Khan","url":"https://rajinkhan.com"},"image":"https://bareclock.com/assets/og/bareclock.png"}</script>
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <script>
+    try {
+      const preferences = JSON.parse(localStorage.getItem('clock.preferences.v1'));
+      if (preferences && preferences.theme === 'light') document.documentElement.dataset.theme = 'light';
+      for (const role of ['background', 'time', 'details', 'tile', 'tileText']) {
+        const color = preferences && preferences.colors && preferences.colors[role];
+        if (typeof color === 'string' && /^#[0-9a-f]{6}$/i.test(color)) document.documentElement.style.setProperty(`--display-${role}`, color);
+      }
+    } catch {}
+  </script>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <svg class="icon-library" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false">
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M3 8h5V3m8 0v5h5M8 21v-5H3m18 0h-5v5"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 10 6 6 6-6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14A8.5 8.5 0 0 1 10 4a8.5 8.5 0 1 0 10 10Z"/></symbol>
+    <symbol id="i-brush" viewBox="0 0 24 24"><path d="m13.5 13.5 6-6a2.1 2.1 0 0 0-3-3l-6 6"/><path d="m13.5 13.5-3-3-5.7 5.7c-1.7 1.7-.5 3.4-1.8 4.8 2.9.5 5-.3 6.3-1.6z"/></symbol>
+    <symbol id="i-tune" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M7 9h10M7 13h6M7 17h8"/></symbol>
+    <symbol id="i-palette" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8 9h8M8 15h3"/><rect x="14" y="12" width="3" height="3" rx=".7"/></symbol>
+    <symbol id="i-clockmark" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></symbol>
+  </svg>
+
+  <div id="app" class="app">
+    <header class="topbar chrome">
+      <a class="wordmark" href="./" aria-label="bareclock home">bareclock.</a>
+      <nav class="toolbar" aria-label="Clock controls">
+        <button id="world-button" class="icon-button" aria-label="World clocks" title="World clocks (W)"><svg><use href="#i-globe"/></svg></button>
+        <button id="fullscreen-button" class="icon-button" aria-label="Enter fullscreen" title="Fullscreen (F)"><svg><use href="#i-expand"/></svg></button>
+        <span class="toolbar-divider"></span>
+        <button id="settings-button" class="icon-button" aria-label="Settings" title="Settings (S)"><svg><use href="#i-settings"/></svg></button>
+      </nav>
+    </header>
+
+    <div class="clock-layout">
+      <main class="main-clock" aria-label="Main clock">
+        <h1 class="sr-only">bareclock, a minimal online clock</h1>
+        <div class="clock-face">
+          <div class="place"><span id="place-name"></span></div>
+          <div id="time-display" class="time-display" aria-hidden="true"></div>
+          <p id="time-accessible" class="sr-only"></p>
+          <p id="date-display" class="date-display"></p>
+        </div>
+      </main>
+      <aside id="world-rail" class="world-rail" aria-label="World clocks" hidden>
+        <div class="rail-heading chrome"><span>WORLD CLOCKS</span><button id="add-world" class="icon-button small" aria-label="Add world clock" title="Add city"><svg><use href="#i-plus"/></svg></button></div>
+        <div id="world-list" class="world-list"></div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <div class="footer-left chrome"><button id="help-button" class="help-button" aria-label="Help" title="Help">?</button><button id="local-button" class="local-button" title="Use device timezone" hidden><span id="local-label">Use device timezone</span></button></div>
+      <div class="keyboard-hints chrome"><span><kbd>F</kbd> Fullscreen</span><span><kbd>S</kbd> Settings</span></div>
+    </footer>
+  </div>
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <div class="panel-heading"><div><p class="eyebrow">CLOCK SETTINGS</p><h2 id="settings-title">Settings</h2></div><button class="icon-button" data-close="settings-dialog" aria-label="Close settings"><svg><use href="#i-close"/></svg></button></div>
+    <div class="panel-content">
+      <fieldset><legend>Clock style</legend><div class="style-options">
+        <button data-setting="style" data-value="simple" class="style-option" aria-pressed="true"><span class="style-preview preview-simple">12:48</span><span>Simple</span></button>
+        <button data-setting="style" data-value="flip" class="style-option" aria-pressed="false"><span class="style-preview preview-flip"><span>12</span><i class="preview-separator">:</i><span>48</span></span><span>Flip</span></button>
+        <button data-setting="style" data-value="digital" class="style-option" aria-pressed="false"><span class="style-preview preview-digital">12:48</span><span>Digital</span></button>
+        <button data-setting="style" data-value="dial" class="style-option" aria-pressed="false"><span class="style-preview preview-dial"><i></i><b></b></span><span>Dial</span></button>
+        <button data-setting="style" data-value="stack" class="style-option" aria-pressed="false"><span class="style-preview preview-stack"><b>12</b><b>48</b></span><span>Stack</span></button>
+        <button data-setting="style" data-value="halo" class="style-option" aria-pressed="false"><span class="style-preview preview-halo"><b>12:48</b></span><span>Halo</span></button>
+        <button data-setting="style" data-value="horizon" class="style-option" aria-pressed="false"><span class="style-preview preview-horizon"><b>12:48</b></span><span>Horizon</span></button>
+        <button data-setting="style" data-value="world" class="style-option" aria-pressed="false"><span class="style-preview preview-world"><i></i><b>12:48</b></span><span>World</span></button>
+      </div></fieldset>
+      <div class="setting-row"><label for="clock-size">Clock size</label><output id="clock-size-value" for="clock-size">80%</output></div>
+      <input id="clock-size" class="size-slider" type="range" min="55" max="100" step="5" value="80" aria-label="Clock size">
+      <div class="size-presets" aria-label="Clock size presets"><button data-size="60">Small</button><button data-size="80">Medium</button><button data-size="100">Large</button></div>
+      <div class="setting-row"><label for="digit-weight">Digit weight</label><select id="digit-weight"><option value="400">Regular</option><option value="550">Medium</option><option value="650">Bold</option></select></div>
+      <fieldset><legend>Appearance</legend><div class="segmented"><button data-setting="theme" data-value="dark" aria-pressed="true"><svg><use href="#i-moon"/></svg>Dark</button><button data-setting="theme" data-value="light" aria-pressed="false"><svg><use href="#i-sun"/></svg>Light</button></div></fieldset>
+      <details id="themes-section" class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-brush"/></svg>Themes</span> <span id="active-theme" class="summary-value">Graphite</span></summary>
+        <div class="theme-filters" role="group" aria-label="Filter themes"><button data-theme-filter="all" aria-pressed="true">All</button><button data-theme-filter="dark" aria-pressed="false">Dark</button><button data-theme-filter="light" aria-pressed="false">Light</button></div>
+        <div id="theme-library" class="theme-library" aria-label="Theme library"></div>
+      </details>
+      <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-palette"/></svg>Custom colors</span></summary>
+        <div class="setting-row color-row"><label for="color-background">Background</label><div class="color-inputs"><input id="swatch-background" type="color" aria-label="Pick background color"><input id="color-background" type="text" aria-label="Background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-time">Time</label><div class="color-inputs"><input id="swatch-time" type="color" aria-label="Pick time color"><input id="color-time" type="text" aria-label="Time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-details">Date & city</label><div class="color-inputs"><input id="swatch-details" type="color" aria-label="Pick date and city color"><input id="color-details" type="text" aria-label="Date and city hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-tile">Tile background</label><div class="color-inputs"><input id="swatch-tile" type="color" aria-label="Pick tile background color"><input id="color-tile" type="text" aria-label="Tile background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <div class="setting-row color-row"><label for="color-tileText">Tile time</label><div class="color-inputs"><input id="swatch-tileText" type="color" aria-label="Pick tile time color"><input id="color-tileText" type="text" aria-label="Tile time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+        <p id="color-contrast" class="color-note" role="status"></p>
+        <button id="reset-colors" class="text-button">Reset colors</button>
+      </details>
+      <div class="setting-row"><label for="hour-format">Time format</label><select id="hour-format"><option value="auto">Device default</option><option value="12">12-hour</option><option value="24">24-hour</option></select></div>
+      <label class="setting-row" for="seconds"><span>Show seconds</span><input type="checkbox" id="seconds" class="switch"></label>
+      <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-tune"/></svg>More display options</span></summary>
+        <label class="setting-row" for="show-date"><span>Show date</span><input type="checkbox" id="show-date" class="switch" checked></label>
+        <div class="setting-row"><label for="date-style">Date style</label><select id="date-style"><option value="full">Full date</option><option value="short">Short date</option><option value="numeric">ISO date</option></select></div>
+        <label class="setting-row" for="show-city"><span>Show city name</span><input type="checkbox" id="show-city" class="switch" checked></label>
+        <label class="setting-row" for="show-period"><span>Show AM / PM</span><input type="checkbox" id="show-period" class="switch" checked></label>
+        <label class="setting-row" for="auto-hide"><span>Auto-hide controls</span><input type="checkbox" id="auto-hide" class="switch" checked></label>
+        <div class="setting-row"><label for="control-style">Controls</label><select id="control-style"><option value="subtle">Subtle</option><option value="standard">Standard</option></select></div>
+        <label class="setting-row" for="show-hints"><span>Show keyboard hints</span><input type="checkbox" id="show-hints" class="switch"></label>
+      </details>
+      <div class="setting-row timezone-row"><div><span class="setting-label"><svg><use href="#i-globe"/></svg>Main timezone</span><small id="main-zone-label">Device timezone</small></div><button id="change-zone" class="text-button">Change</button></div>
+      <button id="reset-zone" class="text-button reset-zone" hidden>Use device timezone</button>
+      <div class="section-divider"></div>
+      <div class="section-heading"><h2><svg><use href="#i-clockmark"/></svg>World clocks</h2><button id="settings-add-world" class="text-button">Add city <span aria-hidden="true">+</span></button></div>
+      <p class="muted empty-message">Select a world clock to make it the main clock. Use × to remove one.</p>
+      <p id="saved-empty" class="muted empty-message">No cities added yet.</p>
+      <div id="saved-cities" class="saved-cities"></div>
+      <label class="setting-row" for="show-world"><span>Show world clocks</span><input type="checkbox" id="show-world" class="switch"></label>
+      <div class="setting-row"><label for="tile-size">Tile size</label><select id="tile-size"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></div>
+      <div class="section-divider"></div>
+      <label class="setting-row wake-row" for="keep-awake"><span><span class="setting-label"><svg><use href="#i-clockmark"/></svg>Keep screen awake</span><small id="awake-status">While this tab is visible</small></span><input type="checkbox" id="keep-awake" class="switch"></label>
+      <p id="offline-status" class="panel-note" role="status">Preferences stay in this browser.</p>
+      <button id="reset-display" class="text-button">Reset display settings</button>
+      <section class="settings-credit" aria-label="About bareclock">
+        <p class="credit-wordmark">bareclock.</p>
+        <p class="credit-note">A clock for your browser.</p>
+        <a class="about-link" href="./about/">About and help <span aria-hidden="true">↗</span></a>
+        <p class="creator-line"><span>Made by</span><a class="signature" href="https://rajinkhan.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Rajin Khan's website">Rajin Khan</a></p>
+
+        <details class="credit-sources"><summary>Credits & sources</summary>
+          <p>Community palettes adapted for bareclock: <a href="https://draculatheme.com/" target="_blank" rel="noopener noreferrer">Dracula</a>, <a href="https://catppuccin.com/palette/" target="_blank" rel="noopener noreferrer">Catppuccin</a>, <a href="https://www.nordtheme.com/" target="_blank" rel="noopener noreferrer">Nord</a>, <a href="https://github.com/folke/tokyonight.nvim" target="_blank" rel="noopener noreferrer">Tokyo Night</a>, <a href="https://github.com/morhetz/gruvbox" target="_blank" rel="noopener noreferrer">Gruvbox</a>, <a href="https://rosepinetheme.com/" target="_blank" rel="noopener noreferrer">Rosé Pine</a>, and <a href="https://ethanschoonover.com/solarized/" target="_blank" rel="noopener noreferrer">Solarized</a>.</p>
+          <p>City data by <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Map data by <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Font license: <a href="./assets/fonts/OFL.txt" target="_blank" rel="noopener noreferrer">SIL OFL 1.1</a>.</p>
+        </details>
+      </section>
+    </div>
+  </dialog>
+
+  <dialog id="city-dialog" class="city-dialog" aria-labelledby="city-title">
+    <div class="panel-heading"><div><p class="eyebrow">CITY AND TIMEZONE</p><h2 id="city-title">Add a city</h2></div><button class="icon-button" data-close="city-dialog" aria-label="Close city picker"><svg><use href="#i-close"/></svg></button></div>
+    <div class="search-field"><svg><use href="#i-search"/></svg><input id="city-search" type="search" aria-label="Search cities, countries or timezones" placeholder="City, country or timezone" autocomplete="off" spellcheck="false"></div>
+    <p id="city-search-status" class="search-status" role="status"></p>
+    <div id="city-results" class="city-results"></div>
+    <button id="city-show-more" class="text-button show-more" hidden>Show more</button>
+    <button id="city-retry" class="text-button show-more" hidden>Try loading cities again</button>
+    <p class="picker-note">Times update automatically for daylight saving.</p>
+  </dialog>
+  <dialog id="onboarding-dialog" class="onboarding-dialog" aria-labelledby="onboarding-title" aria-describedby="onboarding-progress">
+    <div class="onboarding-top"><span class="wordmark">bareclock.</span><button class="icon-button" data-close="onboarding-dialog" aria-label="Close help"><svg><use href="#i-close"/></svg></button></div>
+    <h2 id="onboarding-title" class="sr-only">How to use bareclock</h2>
+    <div class="onboarding-progress"><span id="onboarding-progress">1 of 5</span><div class="progress-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="onboarding-steps" aria-live="polite">
+      <section data-onboarding-step><div class="onboarding-visual intro-clock" aria-hidden="true">12<span>:</span>48</div><div class="onboarding-copy"><p class="eyebrow">BARECLOCK</p><h2>A clock for your browser.</h2><p>Use it in a tab or open it fullscreen.</p></div></section>
+      <section data-onboarding-step hidden><div class="onboarding-visual intro-controls" aria-hidden="true"><span></span><span></span><span></span></div><div class="onboarding-copy"><p class="eyebrow">SETTINGS</p><h2>Choose how it looks.</h2><p>Pick a clock style, size, and theme. Show only the details you want.</p></div></section>
+      <section data-onboarding-step hidden><div class="onboarding-visual intro-world" aria-hidden="true"><span><b>Dhaka</b>12:48</span><span><b>London</b>07:48</span></div><div class="onboarding-copy"><p class="eyebrow">WORLD CLOCKS</p><h2>Add other cities.</h2><p>Use the globe button to add cities. Select one to show it on the main clock.</p></div></section>
+      <section data-onboarding-step hidden><div class="onboarding-visual intro-offline" aria-hidden="true"><strong>12<span>:</span>48</strong><small>AVAILABLE OFFLINE</small></div><div class="onboarding-copy"><p class="eyebrow">OFFLINE</p><h2>Works offline.</h2><p>After your first visit, bareclock works offline. Open the city picker once to save city search too.</p></div></section>
+      <section data-onboarding-step hidden><div class="onboarding-visual intro-keys" aria-hidden="true"><kbd>F</kbd><kbd>S</kbd><kbd>W</kbd></div><div class="onboarding-copy"><p class="eyebrow">SHORTCUTS</p><h2>Use the keyboard.</h2><p>Press F for fullscreen, S for Settings, and W for world clocks.</p></div></section>
+    </div>
+    <div class="onboarding-actions"><button id="onboarding-back" class="text-button" hidden>Back</button><button id="onboarding-next" class="primary-button">Next</button></div>
+  </dialog>
+  <p id="notice" class="notice" role="status" hidden></p>
+  <noscript><p class="no-script">bareclock needs JavaScript to show the current time. <a href="./about/">Read about bareclock</a>.</p></noscript>
+</body>
+</html>
