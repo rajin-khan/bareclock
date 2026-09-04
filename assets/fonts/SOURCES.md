@@ -1,5 +1,8 @@
 # Signature font
 
-La Belle Aurore, regular Latin WOFF2, copied unchanged from the user's portfolio at `/Users/rajin/Developer/ACTIVE/PORTFOLIO/astro@latest/public/assets/fonts/la-belle-aurore-latin.woff2`.
+`la-belle-aurore-latin.woff2` is the regular Latin subset of La Belle Aurore by Kimberly Geswein. It is bundled locally for the creator signature; the rest of the interface uses system fonts.
 
-The family name, weight 400, swap loading, and fallback stack follow that project's `src/components/footer.astro`. The font is self-hosted for offline use. The accompanying `OFL.txt` is from the [Google Fonts repository](https://github.com/google/fonts/blob/main/ofl/labelleaurore/OFL.txt).
+- [Font source on Google Fonts](https://github.com/google/fonts/tree/main/ofl/labelleaurore)
+- [Bundled SIL Open Font License 1.1](OFL.txt)
+
+Copyright 2010 Kimberly Geswein. The font retains its own license and is not covered by the repository's MIT license.

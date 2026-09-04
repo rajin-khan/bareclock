@@ -5,5 +5,15 @@
   "scripts": {
     "dev": "python3 -m http.server 4173 --bind 127.0.0.1",
     "test": "node --test tests/*.test.js"
+  },
+  "description": "A minimal browser clock with eight faces, world clocks, themes, and offline support.",
+  "license": "MIT",
+  "author": "Rajin Khan (https://rajinkhan.com)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rajin-khan/bareclock.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rajin-khan/bareclock/issues"
   }
 }
