@@ -11,8 +11,8 @@ function pngSize(buffer) {
 
 test('public pages expose one useful heading and complete canonical social metadata', async () => {
   for (const [path, canonical, image] of [
-    ['index.html', 'https://bareclock.com/', 'https://bareclock.com/assets/og/bareclock.png'],
-    ['about/index.html', 'https://bareclock.com/about/', 'https://bareclock.com/assets/og/themes.png'],
+    ['index.html', 'https://bareclock.vercel.app/', 'https://bareclock.vercel.app/assets/og/bareclock.png'],
+    ['about/index.html', 'https://bareclock.vercel.app/about/', 'https://bareclock.vercel.app/assets/og/themes.png'],
   ]) {
     const html = await read(path);
     assert.equal((html.match(/<h1\b/g) || []).length, 1, `${path} should have one h1`);
@@ -41,9 +41,9 @@ test('social and app images have exact production dimensions', async () => {
 
 test('crawler files name only public canonical pages', async () => {
   const [robots, sitemap] = await Promise.all([read('robots.txt'), read('sitemap.xml')]);
-  assert.match(robots, /Sitemap: https:\/\/bareclock\.com\/sitemap\.xml/);
+  assert.match(robots, /Sitemap: https:\/\/bareclock\.vercel\.app\/sitemap\.xml/);
   assert.deepEqual([...sitemap.matchAll(/<loc>(.+?)<\/loc>/g)].map(match => match[1]), [
-    'https://bareclock.com/',
-    'https://bareclock.com/about/',
+    'https://bareclock.vercel.app/',
+    'https://bareclock.vercel.app/about/',
   ]);
 });

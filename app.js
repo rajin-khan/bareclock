@@ -117,7 +117,7 @@ function syncControls() {
   $('main-zone-label').textContent = prefs.zone ? `${prefs.cityName || zoneName(prefs.zone)} / ${prefs.zone}` : 'Device timezone';
   $('reset-zone').hidden = isDeviceCity(prefs, deviceZone);
   $('world-rail').hidden = !prefs.showWorld || !prefs.cities.length;
-  $('world-rail').classList.toggle('compact', prefs.tileSize === 'compact');
+  $('world-rail').classList.toggle('large', prefs.tileSize === 'large');
   $('world-button').setAttribute('aria-label', prefs.cities.length ? (prefs.showWorld ? 'Hide world clocks' : 'Show world clocks') : 'World clocks');
   $('world-button').setAttribute('aria-pressed', String(prefs.showWorld && prefs.cities.length > 0));
 }
@@ -728,7 +728,7 @@ function showControls() {
     const remaining = idleDeadline - Date.now();
     if (remaining > 0) { idleTimer = setTimeout(checkIdle, remaining); return; }
     idleTimer = null;
-    if (!$('settings-dialog').open && !$('city-dialog').open && !$('onboarding-dialog').open && !document.querySelector('.chrome :focus-visible')) $('app').classList.add('idle');
+    if (!document.querySelector('dialog[open],.chrome :focus-visible')) $('app').classList.add('idle');
   };
   idleTimer = setTimeout(checkIdle, 4500);
 }
@@ -772,6 +772,7 @@ async function syncWakeLock() {
 }
 
 $('help-button').addEventListener('click', openOnboarding);
+$('about-button').addEventListener('click', () => { $('about-dialog').showModal(); showControls(); });
 $('onboarding-back').addEventListener('click', () => { onboardingStep = Math.max(0, onboardingStep - 1); syncOnboarding(); });
 $('onboarding-next').addEventListener('click', () => {
   const last = document.querySelectorAll('[data-onboarding-step]').length - 1;
@@ -852,7 +853,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 document.addEventListener('keydown', e => {
   showControls();
-  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.target.matches('input,select,textarea,[contenteditable="true"]') || $('settings-dialog').open || $('city-dialog').open || $('onboarding-dialog').open) return;
+  if (e.metaKey || e.ctrlKey || e.altKey || e.repeat || e.target.matches('input,select,textarea,[contenteditable="true"]') || document.querySelector('dialog[open]')) return;
   if (e.key.toLowerCase() === 'f') { e.preventDefault(); fullscreen(); }
   if (e.key.toLowerCase() === 's') { e.preventDefault(); $('settings-button').click(); }
   if (e.key.toLowerCase() === 'w') { e.preventDefault(); $('world-button').click(); }

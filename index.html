@@ -10,21 +10,21 @@
   <meta property="og:description" content="A simple fullscreen clock with world clocks, themes, and custom colors.">
   <meta property="og:type" content="website">
   <title>bareclock | Free Online Clock &amp; World Clocks</title>
-  <link rel="canonical" href="https://bareclock.com/">
+  <link rel="canonical" href="https://bareclock.vercel.app/">
   <meta name="robots" content="index, follow, max-image-preview:large">
   <meta property="og:site_name" content="bareclock">
-  <meta property="og:url" content="https://bareclock.com/">
-  <meta property="og:image" content="https://bareclock.com/assets/og/bareclock.png">
+  <meta property="og:url" content="https://bareclock.vercel.app/">
+  <meta property="og:image" content="https://bareclock.vercel.app/assets/og/bareclock.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="bareclock showing 12:48 on a dark background.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="bareclock | A clock for your browser">
   <meta name="twitter:description" content="A free fullscreen clock with world clocks, flip and digital styles, and 24 themes. No account needed.">
-  <meta name="twitter:image" content="https://bareclock.com/assets/og/bareclock.png">
+  <meta name="twitter:image" content="https://bareclock.vercel.app/assets/og/bareclock.png">
   <meta name="twitter:image:alt" content="bareclock showing 12:48 on a dark background.">
   <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.png">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"bareclock","url":"https://bareclock.com/","description":"A free online clock with fullscreen, world clocks, flip and digital styles, and customizable themes.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and a modern web browser.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Rajin Khan","url":"https://rajinkhan.com"},"image":"https://bareclock.com/assets/og/bareclock.png"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"bareclock","url":"https://bareclock.vercel.app/","description":"A free online clock with fullscreen, world clocks, flip and digital styles, and customizable themes.","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","browserRequirements":"Requires JavaScript and a modern web browser.","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Rajin Khan","url":"https://rajinkhan.com"},"image":"https://bareclock.vercel.app/assets/og/bareclock.png"}</script>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="manifest" href="./manifest.webmanifest">
   <script>
@@ -142,7 +142,7 @@
       <p id="saved-empty" class="muted empty-message">No cities added yet.</p>
       <div id="saved-cities" class="saved-cities"></div>
       <label class="setting-row" for="show-world"><span>Show world clocks</span><input type="checkbox" id="show-world" class="switch"></label>
-      <div class="setting-row"><label for="tile-size">Tile size</label><select id="tile-size"><option value="comfortable">Comfortable</option><option value="compact">Compact</option></select></div>
+      <div class="setting-row"><label for="tile-size">Tile size</label><select id="tile-size"><option value="compact">Compact</option><option value="large">Large</option></select></div>
       <div class="section-divider"></div>
       <label class="setting-row wake-row" for="keep-awake"><span><span class="setting-label"><svg><use href="#i-clockmark"/></svg>Keep screen awake</span><small id="awake-status">While this tab is visible</small></span><input type="checkbox" id="keep-awake" class="switch"></label>
       <p id="offline-status" class="panel-note" role="status">Preferences stay in this browser.</p>
@@ -150,7 +150,7 @@
       <section class="settings-credit" aria-label="About bareclock">
         <p class="credit-wordmark">bareclock.</p>
         <p class="credit-note">A clock for your browser.</p>
-        <a class="about-link" href="./about/">About and help <span aria-hidden="true">↗</span></a>
+        <button id="about-button" class="about-link" aria-haspopup="dialog">About</button>
         <p class="creator-line"><span>Made by</span><a class="signature" href="https://rajinkhan.com" target="_blank" rel="noopener noreferrer" aria-label="Visit Rajin Khan's website">Rajin Khan</a></p>
 
         <details class="credit-sources"><summary>Credits & sources</summary>
@@ -158,6 +158,16 @@
           <p>City data by <a href="https://www.geonames.org/" target="_blank" rel="noopener noreferrer">GeoNames</a>, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>. Map data by <a href="https://www.naturalearthdata.com/" target="_blank" rel="noopener noreferrer">Natural Earth</a>. Font license: <a href="./assets/fonts/OFL.txt" target="_blank" rel="noopener noreferrer">SIL OFL 1.1</a>.</p>
         </details>
       </section>
+    </div>
+  </dialog>
+
+  <dialog id="about-dialog" class="about-dialog" aria-labelledby="about-title">
+    <div class="about-heading"><h2 id="about-title">About</h2><button class="icon-button" data-close="about-dialog" aria-label="Close about" autofocus><svg><use href="#i-close"/></svg></button></div>
+    <div class="about-content">
+      <p>bareclock is a free, open-source clock for your browser.</p>
+      <p>Your settings stay in this browser. No account, ads, or analytics.</p>
+      <p class="creator-line"><span>Made by</span><a class="signature" href="https://rajinkhan.com" target="_blank" rel="noopener noreferrer">Rajin Khan</a></p>
+      <a class="about-source" href="https://github.com/rajin-khan/bareclock" target="_blank" rel="noopener noreferrer">View on GitHub</a>
     </div>
   </dialog>
 

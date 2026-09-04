@@ -2,7 +2,7 @@
 
 A clock for your browser. Open a tab, pick a face, and go fullscreen.
 
-[bareclock.com](https://bareclock.com) · [Report a bug](https://github.com/rajin-khan/bareclock/issues/new?template=bug_report.md) · [Contribute](CONTRIBUTING.md)
+[bareclock.vercel.app](https://bareclock.vercel.app) · [Report a bug](https://github.com/rajin-khan/bareclock/issues/new?template=bug_report.md) · [Contribute](CONTRIBUTING.md)
 
 ![bareclock with a large clock and world clocks on a dark background](assets/og/bareclock.png)
 
@@ -10,7 +10,7 @@ A clock for your browser. Open a tab, pick a face, and go fullscreen.
 
 - Eight clock faces: Simple, Flip, Digital, Dial, Stack, Halo, Horizon, and World.
 - 24 themes, including Dracula, Catppuccin, Nord, and Rosé Pine, plus custom colors.
-- World clocks with search across 235,669 cities and towns. Click a world clock to swap it with the main clock.
+- World clocks with search across 235,669 cities and towns. Choose Compact or Large tiles. Click a world clock to swap it with the main clock.
 - Adjustable size, digit weight, date display, seconds, and 12- or 24-hour time.
 - Fullscreen, optional screen wake lock, and layouts for desktop and mobile.
 - Offline use after the first successful load. The full city directory is available offline after you load it once.

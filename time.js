@@ -179,7 +179,7 @@ export function normalizePreferences(raw) {
     cityRegion: typeof p.cityRegion === 'string' ? p.cityRegion.slice(0, 200) : '',
     cityCountry: typeof p.cityCountry === 'string' ? p.cityCountry.slice(0, 100) : '',
     showWorld: p.showWorld !== false,
-    tileSize: oneOf('tileSize', ['comfortable', 'compact'], 'comfortable'),
+    tileSize: oneOf('tileSize', ['compact', 'large'], 'compact'),
     keepAwake: p.keepAwake === true,
     cities: cities.filter((city, index) => !cities.slice(0, index).some(previous => sameCity(city, previous))),
   };

@@ -6,7 +6,7 @@ bareclock is a static site with no build step or executable dependencies. Serve 
 
 | File | Responsibility |
 | --- | --- |
-| `index.html`, `styles.css` | Clock, settings, city picker, and help |
+| `index.html`, `styles.css` | Clock, settings, city picker, About modal, and help |
 | `app.js` | UI events, clock faces, scheduling, and browser APIs |
 | `time.js` | Timezones, dates, preferences, clock swaps, and solar geometry |
 | `appearance.js` | Themes, custom colors, and contrast |
@@ -40,6 +40,6 @@ Bump `CACHE` in `sw.js` when changing cached app files, and publish those files 
 
 ## Public URLs and social images
 
-Canonical metadata currently targets `https://bareclock.com/`. If hosting at another domain, update `index.html`, `about/index.html`, `robots.txt`, `sitemap.xml`, and the expectations in `tests/static.test.js`. The app is intended to run at the domain root.
+Canonical metadata currently targets `https://bareclock.vercel.app/`. If hosting at another domain, update `index.html`, `about/index.html`, `robots.txt`, `sitemap.xml`, and the expectations in `tests/static.test.js`. The app is intended to run at the domain root.
 
 To regenerate social images, open `/og/index.html` or `/og/themes.html` through the local server, choose Render PNG, and save the download under `assets/og/`. The images must remain 1200 × 630 pixels. `/og/icon.html` provides the app icon source.

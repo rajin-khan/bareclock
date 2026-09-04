@@ -139,3 +139,10 @@ test('size and display preferences validate and dates retain the chosen timezone
   assert.equal(dateAt(now, 'Asia/Dhaka', 'numeric'), '2027-01-01');
   assert.equal(dateAt(now, 'Asia/Dhaka', 'short'), 'Fri, 1 Jan');
 });
+
+test('world clock sizes default to compact and preserve the large choice', () => {
+  for (const tileSize of [undefined, 'comfortable', 'compact', 'invalid']) {
+    assert.equal(normalizePreferences({ tileSize }).tileSize, 'compact');
+  }
+  assert.equal(normalizePreferences({ tileSize: 'large' }).tileSize, 'large');
+});
