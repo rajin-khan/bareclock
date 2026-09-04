@@ -1,4 +1,4 @@
-const CACHE = 'bareclock-v12';
+const CACHE = 'bareclock-v13';
 const DIRECTORY_CACHE = 'clock-citydata-2026-09-04';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './time.js', './appearance.js', './cities.js', './city-directory.js', './city-worker.js', './about/', './assets/world-map.svg', './about/about.css', './icon.svg', './assets/icons/icon-192.png', './assets/icons/icon-512.png', './assets/icons/apple-touch-icon.png', './manifest.webmanifest', './assets/fonts/la-belle-aurore-latin.woff2'];
 const DIRECTORY_PATHS = new Set(['./data/cities.json.gz', './data/cities.json'].map(path => new URL(path, self.location).href));

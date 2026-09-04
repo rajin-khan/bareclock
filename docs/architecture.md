@@ -43,3 +43,5 @@ Bump `CACHE` in `sw.js` when changing cached app files, and publish those files 
 Canonical metadata currently targets `https://bareclock.vercel.app/`. If hosting at another domain, update `index.html`, `about/index.html`, `robots.txt`, `sitemap.xml`, and the expectations in `tests/static.test.js`. The app is intended to run at the domain root.
 
 To regenerate social images, open `/og/index.html` or `/og/themes.html` through the local server, choose Render PNG, and save the download under `assets/og/`. The images must remain 1200 × 630 pixels. `/og/icon.html` provides the app icon source.
+
+Social metadata is present in the initial HTML so crawlers do not need JavaScript. Both public pages declare a PNG image, its HTTPS URL, dimensions, and matching X card metadata. When replacing a social image, increment its `?v=` value in both pages and the static test expectations so crawlers can fetch a fresh image. Existing posts may retain a platform-cached preview until that platform fetches the page again.

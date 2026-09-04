@@ -11,13 +11,24 @@ function pngSize(buffer) {
 
 test('public pages expose one useful heading and complete canonical social metadata', async () => {
   for (const [path, canonical, image] of [
-    ['index.html', 'https://bareclock.vercel.app/', 'https://bareclock.vercel.app/assets/og/bareclock.png'],
-    ['about/index.html', 'https://bareclock.vercel.app/about/', 'https://bareclock.vercel.app/assets/og/themes.png'],
+    ['index.html', 'https://bareclock.vercel.app/', 'https://bareclock.vercel.app/assets/og/bareclock.png?v=2'],
+    ['about/index.html', 'https://bareclock.vercel.app/about/', 'https://bareclock.vercel.app/assets/og/themes.png?v=2'],
   ]) {
     const html = await read(path);
     assert.equal((html.match(/<h1\b/g) || []).length, 1, `${path} should have one h1`);
     assert.match(html, new RegExp(`<link rel="canonical" href="${canonical.replaceAll('.', '\\.')}">`));
     assert.ok(html.includes(`<meta property="og:image" content="${image}">`));
+    assert.ok(html.includes(`<meta property="og:image:secure_url" content="${image}">`));
+    assert.ok(html.includes('<meta property="og:image:type" content="image/png">'));
+    assert.ok(html.includes('<meta property="og:image:width" content="1200">'));
+    assert.ok(html.includes('<meta property="og:image:height" content="630">'));
+    assert.ok(html.includes(`<meta name="twitter:image" content="${image}">`));
+    assert.ok(html.includes('<meta name="twitter:card" content="summary_large_image">'));
+    assert.ok(html.includes('<meta name="twitter:title"'));
+    assert.ok(html.includes('<meta name="twitter:description"'));
+    const imagePath = new URL(image).pathname.slice(1);
+    const imageBytes = await readFile(new URL(`../${imagePath}`, import.meta.url));
+    assert.deepEqual(pngSize(imageBytes), [1200, 630]);
     assert.ok(html.includes('<meta name="description"'));
   }
   const root = await read('index.html');
