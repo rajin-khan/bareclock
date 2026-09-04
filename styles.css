@@ -484,11 +484,11 @@ dialog { overscroll-behavior:contain; scrollbar-width:thin; scroll-padding-block
 .map-zone-label { position:absolute; z-index:2; left:clamp(34px,var(--zone-x),calc(100% - 34px)); bottom:2.5%; translate:-50% 0; padding:3px 5px; border-radius:4px; color:var(--display-details,var(--muted)); background:var(--display-background,var(--bg)); font-size:9px; font-weight:650; line-height:1; letter-spacing:.8px; font-variant-numeric:tabular-nums; white-space:nowrap; }
 .map-face::after { content:""; position:absolute; inset:0; z-index:2; background:radial-gradient(ellipse 34% 29% at center,var(--display-background,var(--bg)) 10%,transparent 100%); pointer-events:none; }
 .map-time { position:absolute; inset:0; z-index:3; display:flex; align-items:center; justify-content:center; font-weight:var(--digit-weight); letter-spacing:normal; }
-.map-time-main { font-size:calc(clamp(70px,20cqw,220px) * var(--clock-scale)); letter-spacing:-.025em; }
+.map-time-main { font-size:calc(clamp(70px,30vw,360px) * var(--clock-scale)); font-size:calc(clamp(70px,30cqw,360px) * var(--clock-scale)); letter-spacing:-.025em; }
 .map-seconds { font-size:calc(clamp(12px,3cqw,30px) * var(--clock-scale)); color:var(--display-details,var(--muted)); letter-spacing:0; margin:.4em 0 0 .55em; }
 .map-period { position:static; align-self:center; margin:.8em 0 0 .65em; font-size:clamp(11px,1.5cqw,17px); opacity:.82; }
-@media (max-width:700px) { .map-face { width:100%; width:min(100%,76dvh); height:min(43vw,38vh); } .map-time-main { font-size:calc(27vw * var(--clock-scale)); font-size:calc(27cqw * var(--clock-scale)); } .map-period { margin-top:.9em; font-size:11px; } .map-zone-label { font-size:8px; } }
-@media (max-height:500px) and (min-width:701px) { .map-face { height:min(32vw,46vh,180px); height:min(42cqw,58dvh); } .map-time-main { font-size:calc(min(18vw,34vh) * var(--clock-scale)); font-size:calc(min(18cqw,34dvh) * var(--clock-scale)); } }
+@media (max-width:700px) { .map-face { width:100%; width:min(100%,76dvh); height:min(43vw,38vh); } .map-time-main { font-size:calc(30vw * var(--clock-scale)); font-size:calc(30cqw * var(--clock-scale)); } .map-period { margin-top:.9em; font-size:11px; } .map-zone-label { font-size:8px; } }
+@media (max-height:500px) and (min-width:701px) { .map-face { height:min(32vw,46vh,180px); height:min(42cqw,58dvh); } .map-time-main { font-size:calc(min(28vw,40vh) * var(--clock-scale)); font-size:calc(min(28cqw,40dvh) * var(--clock-scale)); } }
 button.primary-button:hover:not(:disabled),button.primary-button:focus-visible { color:var(--guide-accent-text,var(--guide-bg)); }
 
 /* Short landscape screens need a compact vertical rhythm, not a scaled desktop stack. */
@@ -509,7 +509,7 @@ button.primary-button:hover:not(:disabled),button.primary-button:focus-visible {
   .time-display.style-stack { margin:2px auto 9px; }
   .time-display.style-world { margin:0 auto 8px; }
   .map-face { width:min(64vw,92vh,360px); width:min(64cqw,92dvh,360px); height:min(32vw,46vh,180px); }
-  .map-time-main { font-size:calc(min(14cqw,25dvh,116px) * var(--clock-scale)); }
+  .map-time-main { font-size:calc(min(28cqw,40dvh,160px) * var(--clock-scale)); }
 }
 
 @media (max-height:560px) and (max-width:700px) {
@@ -531,7 +531,7 @@ button.primary-button:hover:not(:disabled),button.primary-button:focus-visible {
   .time-display.style-stack { font-size:calc(min(28cqw,33dvh,170px) * var(--clock-scale)); margin:1px auto 7px; }
   .time-display.style-world { margin:0 auto 7px; }
   .map-face { width:min(68vw,84vh,300px); width:min(68cqw,84dvh,300px); height:min(34vw,42vh,150px); }
-  .map-time-main { font-size:calc(min(16cqw,26dvh,110px) * var(--clock-scale)); }
+  .map-time-main { font-size:calc(min(28cqw,40dvh,160px) * var(--clock-scale)); }
   .world-rail { width:172px; max-height:100%; padding:0; }
   .world-list { flex-direction:column; }
   .world-tile { width:100%; min-height:104px; }
