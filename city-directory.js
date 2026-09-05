@@ -33,11 +33,12 @@ export function searchDirectory(entries, query, limit = 60) {
   const normalized = cleanSearch(query);
   const words = normalized.split(' ').filter(Boolean);
   const buckets = [[], [], [], [], []];
+  let total = 0;
   for (const entry of entries) {
     if (!words.every(word => entry.search.includes(word))) continue;
+    total++;
     const rank = !normalized ? 4 : entry.name === normalized ? 0 : entry.aliases.includes(normalized) ? 1 : entry.name.startsWith(normalized) ? 2 : words.every(word => entry.name.includes(word)) ? 3 : 4;
-    buckets[rank].push(entry.city);
+    if (buckets[rank].length < limit) buckets[rank].push(entry.city);
   }
-  const all = buckets.flat();
-  return { items: all.slice(0, limit), total: all.length };
+  return { items: buckets.flat().slice(0, limit), total };
 }

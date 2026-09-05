@@ -44,3 +44,13 @@ test('UTC and accents are searchable; no matches are explicit', () => {
   assert.ok(searchDirectory(directory, 'Sao Paulo').items.some(city => city.name === 'São Paulo'));
   assert.equal(searchDirectory(directory, 'zzzz-no-city-exists').total, 0);
 });
+
+test('limited search preserves ranking, pagination and the full match count', () => {
+  const entries = ['elsewhere', 'harbor north', 'harbor'].map((name, id) => ({
+    city: { id, name }, name, aliases: [], search: `${name} harbor`,
+  }));
+  assert.deepEqual(searchDirectory(entries, 'harbor', 1), { items: [entries[2].city], total: 3 });
+  assert.deepEqual(searchDirectory(entries, 'harbor', 2).items, [entries[2].city, entries[1].city]);
+  assert.deepEqual(searchDirectory(entries, '', 1), { items: [entries[0].city], total: 3 });
+  assert.deepEqual(searchDirectory(entries, '', 0), { items: [], total: 3 });
+});

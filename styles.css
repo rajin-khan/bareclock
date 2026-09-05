@@ -31,7 +31,7 @@ svg { width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.5;
 .place { font-size:clamp(16px,2.2vw,24px); font-size:clamp(16px,2.2cqw,24px); line-height:1.3; letter-spacing:-.025em; font-weight:500; color:var(--muted); padding:0 12px; overflow-wrap:break-word; }
 .time-display { position:relative; display:flex; justify-content:center; align-items:baseline; gap:0; width:max-content; max-width:100%; margin:18px auto 22px; font-family:ui-rounded,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:calc(clamp(80px,33vw,460px) * var(--clock-scale)); font-size:calc(clamp(80px,33cqw,460px) * var(--clock-scale)); font-weight:var(--digit-weight); font-variant-numeric:tabular-nums; line-height:1; letter-spacing:-.055em; white-space:nowrap; }
 .time-display.has-seconds { font-size:calc(clamp(52px,23vw,330px) * var(--clock-scale)); font-size:calc(clamp(52px,23cqw,330px) * var(--clock-scale)); }
-.simple-time { display:flex; align-items:baseline; }
+.simple-time { padding-right:.055em; }
 .time-separator { flex:0 0 .25em; width:.25em; text-align:center; letter-spacing:0; font-weight:500; }
 .style-flip .time-separator,.style-digital .time-separator { font-size:.65em; line-height:1; align-self:center; transform:translateY(-.08em); }
 .meridian { position:absolute; left:calc(100% + 12px); bottom:.55em; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; font-size:clamp(12px,1.7cqw,20px); font-weight:600; letter-spacing:0; color:var(--muted); }
@@ -285,10 +285,7 @@ h2 { font-size:12px; font-weight:400; margin:0; }
 .credit-note { color:var(--muted); font-size:12px; line-height:1.7; margin:0 0 13px; max-width:28ch; }
 .creator-line { display:flex; align-items:center; gap:10px; margin:0 0 12px; }
 .creator-line > span { color:var(--muted); font-size:11px; }
-.creator-projects { display:flex; flex-wrap:wrap; gap:8px 16px; }
-.creator-projects a,.credit-sources { color:var(--muted); font-size:10px; line-height:1.7; }
-.creator-projects a { text-decoration:none; padding:5px 0; }
-.creator-projects a:hover { color:var(--fg); text-decoration:underline; text-underline-offset:3px; }
+.credit-sources { color:var(--muted); font-size:10px; line-height:1.7; }
 .credit-sources { margin-top:17px; }
 .credit-sources summary { cursor:pointer; padding:4px 0; }
 .credit-sources p { margin:8px 0; }
@@ -351,7 +348,6 @@ dialog { overscroll-behavior:contain; scrollbar-width:thin; scroll-padding-block
   .saved-actions .icon-button { width:32px; height:36px; }
   .panel-heading,.panel-content { padding-left:20px; padding-right:20px; }
   .setting-row { gap:8px; }
-  .creator-projects a { padding-block:8px; }
 }
 @media (forced-colors:active) { select { appearance:auto; background-image:none; } .switch { appearance:auto; } .switch::before { display:none; } }
 
@@ -389,7 +385,7 @@ dialog { overscroll-behavior:contain; scrollbar-width:thin; scroll-padding-block
 .analog-period { position:absolute; left:50%; bottom:22%; translate:-50% 0; font-size:clamp(10px,.038em,14px); opacity:.78; }
 .time-display.style-stack { font-size:calc(clamp(76px,24cqw,250px) * var(--clock-scale)); margin:12px auto 18px; line-height:.73; letter-spacing:-.07em; }
 .stack-face { position:relative; display:flex; flex-direction:column; align-items:flex-end; row-gap:.08em; font-weight:var(--digit-weight); }
-.stack-number { display:block; }
+.stack-number { display:block; padding-right:.07em; }
 .stack-lower { display:block; }
 .stack-meta { position:absolute; left:calc(100% + .08em); top:50%; translate:0 -50%; display:flex; align-items:baseline; gap:8px; white-space:nowrap; }
 .stack-seconds { font-size:.18em; line-height:1; letter-spacing:0; color:var(--display-details,var(--muted)); }
@@ -401,8 +397,8 @@ dialog { overscroll-behavior:contain; scrollbar-width:thin; scroll-padding-block
 .halo-reset .halo-progress { opacity:0; }
 @media (prefers-reduced-motion:no-preference) { .halo-ring:not(.halo-reset) .halo-progress { transition:stroke-dashoffset 220ms linear; } }
 .halo-digits { position:absolute; inset:0; font-weight:var(--digit-weight); letter-spacing:-.025em; }
-.halo-time { position:absolute; left:50%; top:50%; translate:-50% -50%; font-size:.29em; }
-.halo-seconds { position:absolute; left:88%; top:50%; translate:0 -50%; font-size:.07em; color:var(--display-details,var(--muted)); letter-spacing:0; }
+.halo-time { position:absolute; left:50%; top:50%; translate:-50% -50%; font-size:.29em; padding-right:.025em; }
+.halo-seconds { position:absolute; left:calc(100% + .5em); top:50%; translate:0 -50%; font-size:.07em; color:var(--display-details,var(--muted)); letter-spacing:0; }
 .halo-period { position:absolute; left:50%; bottom:25%; translate:-50% 0; font-size:clamp(10px,.038em,14px); opacity:.78; }
 .hide-period .face-period { display:none; }
 @media (max-width:700px) {
@@ -434,6 +430,7 @@ dialog { overscroll-behavior:contain; scrollbar-width:thin; scroll-padding-block
 .time-display.style-horizon { font-size:calc(clamp(80px,33cqw,440px) * var(--clock-scale)); margin:18px auto 22px; }
 .time-display.style-horizon.has-seconds { font-size:calc(clamp(52px,23cqw,330px) * var(--clock-scale)); }
 .horizon-face { position:relative; display:flex; align-items:baseline; font-weight:var(--digit-weight); letter-spacing:-.055em; }
+.horizon-time { padding-right:.055em; }
 .horizon-seconds { font-size:.18em; letter-spacing:0; color:var(--display-details,var(--muted)); margin-left:.45em; }
 .horizon-period { position:static; align-self:flex-end; margin:0 0 .55em .65em; font-size:clamp(11px,.055em,17px); }
 @media (prefers-reduced-motion:no-preference) {
@@ -519,7 +516,7 @@ button.primary-button:hover:not(:disabled),button.primary-button:focus-visible {
 
 /* Short landscape screens need a compact vertical rhythm, not a scaled desktop stack. */
 @media (max-height:500px) and (min-width:701px) {
-  .clock-face { translate:0 -48px; }
+  .clock-face { translate:none; }
   .place { font-size:15px; }
   .date-display { font-size:16px; line-height:1.25; }
   .time-display,
