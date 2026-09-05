@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { timeAt, dateAt, relativeDay, uses12Hours, nextTickDelay, normalizePreferences, sameCity, swapWorldCity, isDeviceCity, zoneOffsetMinutes, solarMapGeometry } from '../time.js';
+import { timeAt, dateAt, calendarDates, relativeDay, uses12Hours, nextTickDelay, normalizePreferences, sameCity, swapWorldCity, isDeviceCity, zoneOffsetMinutes, solarMapGeometry } from '../time.js';
 import { cityCatalog, searchCities } from '../cities.js';
 
 test('12-hour midnight and noon are unambiguous; 24-hour midnight is 00', () => {
@@ -145,4 +145,16 @@ test('world clock sizes default to compact and preserve the large choice', () =>
     assert.equal(normalizePreferences({ tileSize }).tileSize, 'compact');
   }
   assert.equal(normalizePreferences({ tileSize: 'large' }).tileSize, 'large');
+});
+
+
+test('calendar cards center the selected timezone date across midnight and month boundaries', () => {
+  const before = calendarDates(new Date('2026-12-31T17:59:59Z'), 'Asia/Dhaka');
+  const after = calendarDates(new Date('2026-12-31T18:00:00Z'), 'Asia/Dhaka');
+  assert.equal(before.length, 31);
+  assert.equal(before[15].iso, '2026-12-31');
+  assert.deepEqual(after[15], { iso: '2027-01-01', day: 1, weekday: 'Fri', month: 'Jan' });
+  assert.equal(before[16].iso, after[15].iso);
+  assert.equal(calendarDates(new Date('2024-03-01T00:00:00Z'), 'UTC')[14].iso, '2024-02-29');
+  assert.equal(normalizePreferences({ dateStyle: 'cards' }).dateStyle, 'cards');
 });

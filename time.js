@@ -46,6 +46,18 @@ export function dateAt(now, zone, style = 'full') {
   return `${p.weekday}, ${p.day} ${p.month}`;
 }
 
+export function calendarDates(now, zone) {
+  const today = dateAt(now, zone, 'numeric');
+  const center = new Date(`${today}T12:00:00Z`);
+  const label = new Intl.DateTimeFormat('en-GB', { weekday: 'short', month: 'short', timeZone: 'UTC' });
+  return Array.from({ length: 31 }, (_, index) => {
+    const date = new Date(center);
+    date.setUTCDate(date.getUTCDate() + index - 15);
+    const parts = Object.fromEntries(label.formatToParts(date).map(part => [part.type, part.value]));
+    return { iso: date.toISOString().slice(0, 10), day: date.getUTCDate(), weekday: parts.weekday, month: parts.month };
+  });
+}
+
 function calendarDay(now, zone) {
   const p = Object.fromEntries(formatter(zone, 'day').formatToParts(now).map(p => [p.type, p.value]));
   return Date.UTC(Number(p.year), Number(p.month) - 1, Number(p.day)) / 86400000;
@@ -170,7 +182,7 @@ export function normalizePreferences(raw) {
     showDate: p.showDate !== false,
     showCity: p.showCity !== false,
     showPeriod: p.showPeriod !== false,
-    dateStyle: oneOf('dateStyle', ['full', 'short', 'numeric'], 'full'),
+    dateStyle: oneOf('dateStyle', ['full', 'short', 'numeric', 'cards'], 'full'),
     autoHide: p.autoHide !== false,
     seconds: p.seconds === true,
     zone: validZone(p.zone) ? p.zone : null,

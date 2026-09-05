@@ -52,6 +52,7 @@
     <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
     <symbol id="i-up" viewBox="0 0 24 24"><path d="m6 14 6-6 6 6"/></symbol>
     <symbol id="i-down" viewBox="0 0 24 24"><path d="m6 10 6 6 6-6"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><circle cx="8" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="18" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="18" r="1" fill="currentColor" stroke="none"/></symbol>
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14A8.5 8.5 0 0 1 10 4a8.5 8.5 0 1 0 10 10Z"/></symbol>
@@ -80,6 +81,7 @@
           <div id="time-display" class="time-display" aria-hidden="true"></div>
           <p id="time-accessible" class="sr-only"></p>
           <p id="date-display" class="date-display"></p>
+          <div id="calendar-dates" class="calendar-dates" role="region" aria-label="Calendar dates" hidden></div>
         </div>
       </main>
       <aside id="world-rail" class="world-rail" aria-label="World clocks" hidden>
@@ -97,58 +99,74 @@
   <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
     <div class="panel-heading"><div><p class="eyebrow">CLOCK SETTINGS</p><h2 id="settings-title">Settings</h2></div><button class="icon-button" data-close="settings-dialog" aria-label="Close settings"><svg><use href="#i-close"/></svg></button></div>
     <div class="panel-content">
-      <fieldset><legend>Clock style</legend><div class="style-options">
-        <button data-setting="style" data-value="simple" class="style-option" aria-pressed="true"><span class="style-preview preview-simple">12:48</span><span>Simple</span></button>
-        <button data-setting="style" data-value="flip" class="style-option" aria-pressed="false"><span class="style-preview preview-flip"><span>12</span><i class="preview-separator">:</i><span>48</span></span><span>Flip</span></button>
-        <button data-setting="style" data-value="digital" class="style-option" aria-pressed="false"><span class="style-preview preview-digital">12:48</span><span>Digital</span></button>
-        <button data-setting="style" data-value="dial" class="style-option" aria-pressed="false"><span class="style-preview preview-dial"><i></i><b></b></span><span>Dial</span></button>
-        <button data-setting="style" data-value="stack" class="style-option" aria-pressed="false"><span class="style-preview preview-stack"><b>12</b><b>48</b></span><span>Stack</span></button>
-        <button data-setting="style" data-value="halo" class="style-option" aria-pressed="false"><span class="style-preview preview-halo"><b>12:48</b></span><span>Halo</span></button>
-        <button data-setting="style" data-value="horizon" class="style-option" aria-pressed="false"><span class="style-preview preview-horizon"><b>12:48</b></span><span>Horizon</span></button>
-        <button data-setting="style" data-value="world" class="style-option" aria-pressed="false"><span class="style-preview preview-world"><i></i><b>12:48</b></span><span>World</span></button>
-      </div></fieldset>
-      <div class="setting-row"><label for="clock-size">Clock size</label><output id="clock-size-value" for="clock-size">80%</output></div>
-      <input id="clock-size" class="size-slider" type="range" min="55" max="100" step="5" value="80" aria-label="Clock size">
-      <div class="size-presets" aria-label="Clock size presets"><button data-size="60">Small</button><button data-size="80">Medium</button><button data-size="100">Large</button></div>
-      <div class="setting-row"><label for="digit-weight">Digit weight</label><select id="digit-weight"><option value="400">Regular</option><option value="550">Medium</option><option value="650">Bold</option></select></div>
-      <fieldset><legend>Appearance</legend><div class="segmented"><button data-setting="theme" data-value="dark" aria-pressed="true"><svg><use href="#i-moon"/></svg>Dark</button><button data-setting="theme" data-value="light" aria-pressed="false"><svg><use href="#i-sun"/></svg>Light</button></div></fieldset>
-      <details id="themes-section" class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-brush"/></svg>Themes</span> <span id="active-theme" class="summary-value">Graphite</span></summary>
-        <div class="theme-filters" role="group" aria-label="Filter themes"><button data-theme-filter="all" aria-pressed="true">All</button><button data-theme-filter="dark" aria-pressed="false">Dark</button><button data-theme-filter="light" aria-pressed="false">Light</button></div>
-        <div id="theme-library" class="theme-library" aria-label="Theme library"></div>
-      </details>
-      <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-palette"/></svg>Custom colors</span></summary>
-        <div class="setting-row color-row"><label for="color-background">Background</label><div class="color-inputs"><button id="swatch-background" class="color-swatch" aria-label="Pick background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-background" type="text" aria-label="Background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-time">Time</label><div class="color-inputs"><button id="swatch-time" class="color-swatch" aria-label="Pick time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-time" type="text" aria-label="Time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-details">Date & city</label><div class="color-inputs"><button id="swatch-details" class="color-swatch" aria-label="Pick date and city color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-details" type="text" aria-label="Date and city hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-tile">Tile background</label><div class="color-inputs"><button id="swatch-tile" class="color-swatch" aria-label="Pick tile background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tile" type="text" aria-label="Tile background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <div class="setting-row color-row"><label for="color-tileText">Tile time</label><div class="color-inputs"><button id="swatch-tileText" class="color-swatch" aria-label="Pick tile time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tileText" type="text" aria-label="Tile time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
-        <p id="color-contrast" class="color-note" role="status"></p>
-        <button id="reset-colors" class="text-button">Reset colors</button>
-      </details>
-      <div class="setting-row"><label for="hour-format">Time format</label><select id="hour-format"><option value="auto">Device default</option><option value="12">12-hour</option><option value="24">24-hour</option></select></div>
-      <label class="setting-row" for="seconds"><span>Show seconds</span><input type="checkbox" id="seconds" class="switch"></label>
-      <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-tune"/></svg>More display options</span></summary>
-        <label class="setting-row" for="show-date"><span>Show date</span><input type="checkbox" id="show-date" class="switch" checked></label>
-        <div class="setting-row"><label for="date-style">Date style</label><select id="date-style"><option value="full">Full date</option><option value="short">Short date</option><option value="numeric">ISO date</option></select></div>
-        <label class="setting-row" for="show-city"><span>Show city name</span><input type="checkbox" id="show-city" class="switch" checked></label>
+      <section class="settings-section" aria-labelledby="clock-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">01</p><h3 id="clock-section-title">Clock</h3></div><p>Choose the face and how time is read.</p></div>
+        <fieldset><legend>Clock style</legend><div class="style-options">
+          <button data-setting="style" data-value="simple" class="style-option" aria-pressed="true"><span class="style-preview preview-simple">12:48</span><span>Simple</span></button>
+          <button data-setting="style" data-value="flip" class="style-option" aria-pressed="false"><span class="style-preview preview-flip"><span>12</span><i class="preview-separator">:</i><span>48</span></span><span>Flip</span></button>
+          <button data-setting="style" data-value="digital" class="style-option" aria-pressed="false"><span class="style-preview preview-digital">12:48</span><span>Digital</span></button>
+          <button data-setting="style" data-value="dial" class="style-option" aria-pressed="false"><span class="style-preview preview-dial"><i></i><b></b></span><span>Dial</span></button>
+          <button data-setting="style" data-value="stack" class="style-option" aria-pressed="false"><span class="style-preview preview-stack"><b>12</b><b>48</b></span><span>Stack</span></button>
+          <button data-setting="style" data-value="halo" class="style-option" aria-pressed="false"><span class="style-preview preview-halo"><b>12:48</b></span><span>Halo</span></button>
+          <button data-setting="style" data-value="horizon" class="style-option" aria-pressed="false"><span class="style-preview preview-horizon"><b>12:48</b></span><span>Horizon</span></button>
+          <button data-setting="style" data-value="world" class="style-option" aria-pressed="false"><span class="style-preview preview-world"><i></i><b>12:48</b></span><span>World</span></button>
+        </div></fieldset>
+        <div class="setting-row"><label for="clock-size">Clock size</label><output id="clock-size-value" for="clock-size">80%</output></div>
+        <input id="clock-size" class="size-slider" type="range" min="55" max="100" step="5" value="80" aria-label="Clock size">
+        <div class="size-presets" aria-label="Clock size presets"><button data-size="60">Small</button><button data-size="80">Medium</button><button data-size="100">Large</button></div>
+        <div class="setting-row"><label for="digit-weight">Digit weight</label><select id="digit-weight"><option value="400">Regular</option><option value="550">Medium</option><option value="650">Bold</option></select></div>
+        <div class="setting-row"><label for="hour-format">Time format</label><select id="hour-format"><option value="auto">Device default</option><option value="12">12-hour</option><option value="24">24-hour</option></select></div>
+        <label class="setting-row" for="seconds"><span>Show seconds</span><input type="checkbox" id="seconds" class="switch"></label>
         <label class="setting-row" for="show-period"><span>Show AM / PM</span><input type="checkbox" id="show-period" class="switch" checked></label>
+      </section>
+
+      <section class="settings-section" aria-labelledby="date-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">02</p><h3 id="date-section-title">Date &amp; location</h3></div><p>Choose what appears beneath the clock.</p></div>
+        <label class="setting-row" for="show-date"><span>Show date</span><input type="checkbox" id="show-date" class="switch" checked></label>
+        <div class="setting-row"><label for="date-style">Date style</label><select id="date-style"><option value="full">Full date</option><option value="short">Short date</option><option value="numeric">ISO date</option><option value="cards">Calendar cards</option></select></div>
+        <label class="setting-row" for="show-city"><span>Show city name</span><input type="checkbox" id="show-city" class="switch" checked></label>
+        <div class="setting-row timezone-row"><div><span class="setting-label"><svg><use href="#i-globe"/></svg>Main timezone</span><small id="main-zone-label">Device timezone</small></div><button id="change-zone" class="text-button">Change</button></div>
+        <button id="reset-zone" class="text-button reset-zone" hidden>Use device timezone</button>
+      </section>
+
+      <section class="settings-section" aria-labelledby="appearance-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">03</p><h3 id="appearance-section-title">Appearance</h3></div><p>Set the mood, palette, and contrast.</p></div>
+        <fieldset><legend>Mode</legend><div class="segmented"><button data-setting="theme" data-value="dark" aria-pressed="true"><svg><use href="#i-moon"/></svg>Dark</button><button data-setting="theme" data-value="light" aria-pressed="false"><svg><use href="#i-sun"/></svg>Light</button></div></fieldset>
+        <details id="themes-section" class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-brush"/></svg>Themes</span> <span id="active-theme" class="summary-value">Graphite</span></summary>
+          <div class="theme-filters" role="group" aria-label="Filter themes"><button data-theme-filter="all" aria-pressed="true">All</button><button data-theme-filter="dark" aria-pressed="false">Dark</button><button data-theme-filter="light" aria-pressed="false">Light</button></div>
+          <div id="theme-library" class="theme-library" aria-label="Theme library"></div>
+        </details>
+        <details class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-palette"/></svg>Custom colors</span></summary>
+          <div class="setting-row color-row"><label for="color-background">Background</label><div class="color-inputs"><button id="swatch-background" class="color-swatch" aria-label="Pick background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-background" type="text" aria-label="Background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+          <div class="setting-row color-row"><label for="color-time">Time</label><div class="color-inputs"><button id="swatch-time" class="color-swatch" aria-label="Pick time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-time" type="text" aria-label="Time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+          <div class="setting-row color-row"><label for="color-details">Date &amp; city</label><div class="color-inputs"><button id="swatch-details" class="color-swatch" aria-label="Pick date and city color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-details" type="text" aria-label="Date and city hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+          <div class="setting-row color-row"><label for="color-tile">Tile background</label><div class="color-inputs"><button id="swatch-tile" class="color-swatch" aria-label="Pick tile background color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tile" type="text" aria-label="Tile background hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+          <div class="setting-row color-row"><label for="color-tileText">Tile time</label><div class="color-inputs"><button id="swatch-tileText" class="color-swatch" aria-label="Pick tile time color" aria-haspopup="dialog"><span aria-hidden="true"></span></button><input id="color-tileText" type="text" aria-label="Tile time hex color" maxlength="7" spellcheck="false" autocomplete="off"></div></div>
+          <p id="color-contrast" class="color-note" role="status"></p>
+          <button id="reset-colors" class="text-button">Reset colors</button>
+        </details>
+      </section>
+
+      <section class="settings-section" aria-labelledby="world-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">04</p><h3 id="world-section-title">World clocks</h3></div><p>Keep other cities close at hand.</p></div>
+        <div class="section-heading"><h2><svg><use href="#i-globe"/></svg>Saved cities</h2><button id="settings-add-world" class="text-button">Add city <span aria-hidden="true">+</span></button></div>
+        <p class="muted empty-message">Select a city to make it the main clock. Drag to reorder.</p>
+        <p id="saved-empty" class="muted empty-message">No cities added yet.</p>
+        <div id="saved-cities" class="saved-cities"></div>
+        <label class="setting-row" for="show-world"><span>Show world clocks</span><input type="checkbox" id="show-world" class="switch"></label>
+        <div class="setting-row"><label for="tile-size">Tile size</label><select id="tile-size"><option value="compact">Compact</option><option value="large">Large</option></select></div>
+      </section>
+
+      <section class="settings-section" aria-labelledby="behavior-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">05</p><h3 id="behavior-section-title">Behavior</h3></div><p>Control the chrome and the screen.</p></div>
         <label class="setting-row" for="auto-hide"><span>Auto-hide controls</span><input type="checkbox" id="auto-hide" class="switch" checked></label>
         <div class="setting-row"><label for="control-style">Controls</label><select id="control-style"><option value="subtle">Subtle</option><option value="standard">Standard</option></select></div>
         <label class="setting-row" for="show-hints"><span>Show keyboard hints</span><input type="checkbox" id="show-hints" class="switch"></label>
-      </details>
-      <div class="setting-row timezone-row"><div><span class="setting-label"><svg><use href="#i-globe"/></svg>Main timezone</span><small id="main-zone-label">Device timezone</small></div><button id="change-zone" class="text-button">Change</button></div>
-      <button id="reset-zone" class="text-button reset-zone" hidden>Use device timezone</button>
-      <div class="section-divider"></div>
-      <div class="section-heading"><h2><svg><use href="#i-clockmark"/></svg>World clocks</h2><button id="settings-add-world" class="text-button">Add city <span aria-hidden="true">+</span></button></div>
-      <p class="muted empty-message">Select a world clock to make it the main clock. Use × to remove one.</p>
-      <p id="saved-empty" class="muted empty-message">No cities added yet.</p>
-      <div id="saved-cities" class="saved-cities"></div>
-      <label class="setting-row" for="show-world"><span>Show world clocks</span><input type="checkbox" id="show-world" class="switch"></label>
-      <div class="setting-row"><label for="tile-size">Tile size</label><select id="tile-size"><option value="compact">Compact</option><option value="large">Large</option></select></div>
-      <div class="section-divider"></div>
-      <label class="setting-row wake-row" for="keep-awake"><span><span class="setting-label"><svg><use href="#i-clockmark"/></svg>Keep screen awake</span><small id="awake-status">While this tab is visible</small></span><input type="checkbox" id="keep-awake" class="switch"></label>
-      <p id="offline-status" class="panel-note" role="status">Preferences stay in this browser.</p>
-      <button id="reset-display" class="text-button">Reset display settings</button>
+        <label class="setting-row wake-row" for="keep-awake"><span><span class="setting-label"><svg><use href="#i-clockmark"/></svg>Keep screen awake</span><small id="awake-status">While this tab is visible</small></span><input type="checkbox" id="keep-awake" class="switch"></label>
+        <p id="offline-status" class="panel-note" role="status">Preferences stay in this browser.</p>
+        <button id="reset-display" class="text-button">Reset display settings</button>
+      </section>
+
       <section class="settings-credit" aria-label="About bareclock">
         <p class="credit-wordmark">bareclock.</p>
         <p class="credit-note">A clock for your browser.</p>

@@ -1,4 +1,4 @@
-import { localZone, uses12Hours, timeAt, dateAt, relativeDay, nextTickDelay, normalizePreferences, sameCity, swapWorldCity, isDeviceCity, zoneOffsetMinutes, solarMapGeometry } from './time.js';
+import { localZone, uses12Hours, timeAt, dateAt, calendarDates, relativeDay, nextTickDelay, normalizePreferences, sameCity, swapWorldCity, isDeviceCity, zoneOffsetMinutes, solarMapGeometry } from './time.js';
 import { palettes, themeCatalog, matchingTheme, displayColors, controlColor, contrast, mix, validColor } from './appearance.js';
 import { createColorPicker } from './color-picker.js';
 import { cityCatalog, searchCities, zoneName } from './cities.js';
@@ -31,6 +31,7 @@ let solarMinute = -1, solarGeometry;
 let cityWorker, workerIdleTimer, searchDebounce;
 let searchRequest = 0, cityLimit = 60, directoryReady = false;
 let hour12Key = '', hour12Value = false;
+let draggedWorldIndex = -1;
 
 function el(tag, className, text) {
   const element = document.createElement(tag);
@@ -106,7 +107,8 @@ function syncControls() {
   $('date-style').value = prefs.dateStyle;
   $('date-style').disabled = !prefs.showDate;
   for (const [id, key] of [['show-date', 'showDate'], ['show-city', 'showCity'], ['show-period', 'showPeriod'], ['auto-hide', 'autoHide']]) $(id).checked = prefs[key];
-  $('date-display').hidden = !prefs.showDate;
+  $('date-display').hidden = !prefs.showDate || prefs.dateStyle === 'cards';
+  $('calendar-dates').hidden = !prefs.showDate || prefs.dateStyle !== 'cards';
   document.querySelector('.place').hidden = !prefs.showCity;
   document.querySelectorAll('[data-size]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.size) === prefs.clockSize)));
   document.querySelectorAll('[data-setting]').forEach(button => button.setAttribute('aria-pressed', String(prefs[button.dataset.setting] === button.dataset.value)));
@@ -499,6 +501,87 @@ function renderFace(time, force, now, zone) {
   previousStructure = structureKey;
 }
 
+const calendarStrip = $('calendar-dates');
+let calendarKey = '', calendarReturnTimer, calendarScrollTimer;
+
+function centerCalendarCard(card, behavior = 'smooth') {
+  if (!card) return;
+  calendarStrip.querySelectorAll('.calendar-card').forEach(item => {
+    item.classList.toggle('is-centered', item === card);
+    item.tabIndex = item === card ? 0 : -1;
+  });
+  calendarStrip.scrollTo({
+    left: card.offsetLeft - calendarStrip.clientWidth / 2 + card.offsetWidth / 2,
+    behavior: reducedMotion.matches ? 'instant' : behavior,
+  });
+}
+
+function scheduleCalendarReturn() {
+  clearTimeout(calendarReturnTimer);
+  const today = calendarStrip.querySelector('[aria-current="date"]');
+  if (!today || today.classList.contains('is-centered')) return;
+  calendarReturnTimer = setTimeout(() => centerCalendarCard(today), 10000);
+}
+
+calendarStrip.addEventListener('scroll', () => {
+  clearTimeout(calendarScrollTimer);
+  calendarScrollTimer = setTimeout(() => {
+    const middle = calendarStrip.scrollLeft + calendarStrip.clientWidth / 2;
+    const cards = [...calendarStrip.querySelectorAll('.calendar-card')];
+    if (calendarStrip.hidden || !cards.length) return;
+    const nearest = cards.reduce((best, card) => Math.abs(card.offsetLeft + card.offsetWidth / 2 - middle) < Math.abs(best.offsetLeft + best.offsetWidth / 2 - middle) ? card : best);
+    cards.forEach(card => {
+      card.classList.toggle('is-centered', card === nearest);
+      card.tabIndex = card === nearest ? 0 : -1;
+    });
+    scheduleCalendarReturn();
+  }, 150);
+}, { passive: true });
+
+calendarStrip.addEventListener('keydown', event => {
+  if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
+  const cards = [...calendarStrip.querySelectorAll('.calendar-card')];
+  const current = cards.indexOf(document.activeElement);
+  const target = cards[Math.max(0, Math.min(cards.length - 1, current + (event.key === 'ArrowLeft' ? -1 : 1)))];
+  if (!target) return;
+  event.preventDefault();
+  target.focus({ preventScroll: true });
+  centerCalendarCard(target);
+  scheduleCalendarReturn();
+});
+
+new ResizeObserver(() => {
+  if (!calendarStrip.hidden) centerCalendarCard(calendarStrip.querySelector('.is-centered,[aria-current="date"]'), 'instant');
+}).observe(calendarStrip);
+
+function renderCalendar(now, zone) {
+  const strip = calendarStrip;
+  if (strip.hidden) { calendarKey = ''; clearTimeout(calendarReturnTimer); clearTimeout(calendarScrollTimer); return; }
+  const today = dateAt(now, zone, 'numeric');
+  const key = `${zone}|${today}`;
+  if (key === calendarKey) return;
+  const previous = strip.querySelector('[aria-current="date"]')?.dataset.date;
+  const glide = calendarKey.startsWith(`${zone}|`) && previous !== today && !reducedMotion.matches;
+  calendarKey = key;
+  const cards = calendarDates(now, zone).map(date => {
+    const card = el('button', 'calendar-card');
+    card.type = 'button';
+    card.dataset.date = date.iso;
+    card.setAttribute('aria-label', `Center ${date.weekday}, ${date.day} ${date.month}`);
+    if (date.iso === today) card.setAttribute('aria-current', 'date');
+    const body = el('span', 'calendar-card-body');
+    body.append(el('strong', 'calendar-day', date.day), el('span', 'calendar-month', date.month));
+    card.append(el('span', 'calendar-weekday', date.weekday), body);
+    card.addEventListener('click', () => { centerCalendarCard(card); scheduleCalendarReturn(); });
+    return card;
+  });
+  strip.replaceChildren(...cards);
+  const current = cards[15];
+  const old = glide && cards.find(card => card.dataset.date === previous);
+  centerCalendarCard(old || current, 'instant');
+  if (old) requestAnimationFrame(() => centerCalendarCard(current));
+}
+
 function render(force = false) {
   const now = new Date();
   const zone = mainZone();
@@ -507,6 +590,7 @@ function render(force = false) {
   renderFace(time, force, now, zone);
   const minuteKey = `${Math.floor(now.getTime() / 60000)}|${zone}`;
   if (force || minuteKey !== lastMainMinute) {
+    renderCalendar(now, zone);
     const date = dateAt(now, zone, prefs.dateStyle);
     if (date !== lastDate || force) { $('date-display').textContent = date; lastDate = date; }
     const deviceCity = isDeviceCity(prefs, deviceZone);
@@ -522,10 +606,13 @@ function render(force = false) {
     $('world-list').querySelectorAll('.world-tile').forEach((tile, index) => {
       const saved = prefs.cities[index];
       const worldTime = timeAt(now, saved.zone, twelveHour);
+      const relative = relativeDay(now, saved.zone, zone);
       tile.querySelector('.world-digits').textContent = `${worldTime.hour}:${worldTime.minute}`;
       tile.querySelector('.world-period').textContent = worldTime.period;
-      tile.querySelector('.world-relative').textContent = relativeDay(now, saved.zone, zone);
-      tile.querySelector('.world-select').setAttribute('aria-pressed', String(Boolean(prefs.zone) && sameCity({zone: prefs.zone, name: prefs.cityName, id: prefs.cityId}, saved)));
+      tile.querySelector('.world-relative').textContent = relative;
+      const select = tile.querySelector('.world-select');
+      select.setAttribute('aria-label', `${select.title}. ${worldTime.hour}:${worldTime.minute}${worldTime.period ? ` ${worldTime.period}` : ''}, ${relative}. Alt plus an arrow key moves this clock.`);
+      select.setAttribute('aria-pressed', String(Boolean(prefs.zone) && sameCity({zone: prefs.zone, name: prefs.cityName, id: prefs.cityId}, saved)));
     });
     lastWorldMinute = minuteKey;
   }
@@ -545,6 +632,22 @@ function commitCities() {
   save(); buildRail(); syncControls(); render(true);
 }
 
+function moveWorldCity(from, to, focus = 'rail') {
+  if (from === to || from < 0 || to < 0 || from >= prefs.cities.length || to >= prefs.cities.length) return;
+  const [city] = prefs.cities.splice(from, 1);
+  prefs.cities.splice(to, 0, city);
+  commitCities();
+  const list = focus === 'settings' ? $('saved-cities') : $('world-list');
+  const target = list.children[to];
+  (target?.querySelector(focus === 'settings' ? 'button:not(:disabled)' : '.world-select') || $('world-button')).focus();
+  notify(`Moved ${city.name} to position ${to + 1}`);
+}
+
+function clearWorldDrag() {
+  draggedWorldIndex = -1;
+  $('world-list').querySelectorAll('.world-tile').forEach(tile => tile.classList.remove('is-dragging', 'is-drop-target'));
+}
+
 function removeWorldCity(city, fromSettings = false) {
   const index = prefs.cities.findIndex(saved => sameCity(saved, city));
   if (index < 0) return;
@@ -559,18 +662,58 @@ function buildRail() {
   const list = document.createDocumentFragment();
   prefs.cities.forEach((city, index) => {
     const tile = el('div', 'world-tile');
+    tile.draggable = prefs.cities.length > 1;
+    tile.addEventListener('dragstart', event => {
+      if (!tile.draggable || event.target.closest('.world-remove')) { event.preventDefault(); return; }
+      draggedWorldIndex = index;
+      tile.classList.add('is-dragging');
+      event.dataTransfer.effectAllowed = 'move';
+      event.dataTransfer.setData('text/plain', String(index));
+    });
+    tile.addEventListener('dragover', event => {
+      if (draggedWorldIndex < 0) return;
+      $('world-list').querySelectorAll('.is-drop-target').forEach(item => item.classList.remove('is-drop-target'));
+      if (draggedWorldIndex === index) return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect = 'move';
+      tile.classList.add('is-drop-target');
+    });
+    tile.addEventListener('drop', event => {
+      event.preventDefault();
+      const from = draggedWorldIndex;
+      clearWorldDrag();
+      moveWorldCity(from, index);
+    });
+    tile.addEventListener('dragend', clearWorldDrag);
     const select = el('button', 'world-select');
     select.title = `Show ${city.name} on the main clock${cityLocation(city) ? ', ' + cityLocation(city) : ''}`;
     select.setAttribute('aria-label', select.title);
+    const heading = el('span', 'world-card-heading');
+    const grip = el('span', 'world-drag');
+    grip.setAttribute('aria-hidden', 'true');
+    grip.draggable = tile.draggable;
+    grip.append(icon('grip'));
+    const place = el('span', 'world-place');
+    place.append(el('span', 'world-city', city.name), el('small', 'world-location', cityLocation(city) || city.zone.replaceAll('_', ' ')));
+    heading.append(grip, place);
     const time = el('span', 'world-time');
     time.append(el('span', 'world-digits'), el('small', 'world-period'));
-    select.append(el('span', 'world-city', city.name), time, el('span', 'world-relative'));
+    const meta = el('span', 'world-meta');
+    meta.append(el('span', 'world-relative'), el('span', 'world-offset'));
+    select.append(heading, time, meta);
     select.addEventListener('click', () => {
       prefs = swapWorldCity(prefs, city, deviceZone);
       commitCities();
       revealClock();
       const replacement = [...$('world-list').querySelectorAll('.world-select')][Math.min(prefs.cities.length - 1, index)];
       (replacement || $('world-button')).focus();
+    });
+    select.addEventListener('keydown', event => {
+      if (!event.altKey) return;
+      const direction = ['ArrowUp', 'ArrowLeft'].includes(event.key) ? -1 : ['ArrowDown', 'ArrowRight'].includes(event.key) ? 1 : 0;
+      if (!direction || index + direction < 0 || index + direction >= prefs.cities.length) return;
+      event.preventDefault();
+      moveWorldCity(index, index + direction);
     });
     const remove = el('button', 'icon-button world-remove');
     remove.setAttribute('aria-label', `Remove ${city.name}`);
@@ -601,11 +744,7 @@ function buildSavedCities() {
       button.append(icon(symbol));
       button.addEventListener('click', () => {
         if (action === 'remove') { removeWorldCity(city, true); return; }
-        const target = index + (action === 'up' ? -1 : 1);
-        [prefs.cities[index], prefs.cities[target]] = [prefs.cities[target], prefs.cities[index]];
-        commitCities();
-        const nextAction = $('saved-cities').children[target] && $('saved-cities').children[target].querySelector('button:not(:disabled)');
-        if (nextAction) nextAction.focus();
+        moveWorldCity(index, index + (action === 'up' ? -1 : 1), 'settings');
       });
       actions.append(button);
     }
