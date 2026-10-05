@@ -56,6 +56,10 @@
     <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
     <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
     <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14A8.5 8.5 0 0 1 10 4a8.5 8.5 0 1 0 10 10Z"/></symbol>
+    <symbol id="i-prayer" viewBox="0 0 24 24"><path d="M17 14A7 7 0 0 1 9 5a7 7 0 1 0 8 9Z"/><path d="m18 3 .9 2.7L22 7l-3.1 1.3L18 11l-.9-2.7L14 7l3.1-1.3Z"/></symbol>
+    <symbol id="i-dawn" viewBox="0 0 24 24"><path d="M3 17h18M5 21h14M7 17a5 5 0 0 1 10 0M12 3v6m-3-3 3-3 3 3M4 10l2 2m14-2-2 2"/></symbol>
+    <symbol id="i-afternoon" viewBox="0 0 24 24"><circle cx="12" cy="10" r="4"/><path d="M12 2v1M4 10H3m18 0h-1M5.5 3.5l1 1m11-1-1 1M3 18h18M7 22h10"/></symbol>
+    <symbol id="i-sunset" viewBox="0 0 24 24"><path d="M3 17h18M5 21h14M7 17a5 5 0 0 1 10 0M12 3v6m-3-3 3 3 3-3M4 10l2 2m14-2-2 2"/></symbol>
     <symbol id="i-brush" viewBox="0 0 24 24"><path d="m13.5 13.5 6-6a2.1 2.1 0 0 0-3-3l-6 6"/><path d="m13.5 13.5-3-3-5.7 5.7c-1.7 1.7-.5 3.4-1.8 4.8 2.9.5 5-.3 6.3-1.6z"/></symbol>
     <symbol id="i-tune" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="14" rx="3"/><path d="M7 9h10M7 13h6M7 17h8"/></symbol>
     <symbol id="i-palette" viewBox="0 0 24 24"><rect x="3.5" y="4" width="17" height="16" rx="4"/><path d="M8 9h8M8 15h3"/><rect x="14" y="12" width="3" height="3" rx=".7"/></symbol>
@@ -76,6 +80,11 @@
     <div class="clock-layout">
       <main class="main-clock" aria-label="Main clock">
         <h1 class="sr-only">bareclock, a minimal online clock</h1>
+        <section id="prayer-bar" class="prayer-bar" aria-labelledby="prayer-bar-title" hidden>
+          <div class="prayer-heading"><h2 id="prayer-bar-title"><svg aria-hidden="true"><use href="#i-prayer"/></svg>Prayer times</h2><p id="prayer-next" role="status"></p></div>
+          <ol id="prayer-list" class="prayer-list"></ol>
+          <div id="prayer-message" class="prayer-message" hidden><span id="prayer-status" role="status"></span><button id="prayer-action" class="text-button" hidden>Retry</button></div>
+        </section>
         <div class="clock-face">
           <div class="place"><span id="place-name"></span></div>
           <div id="time-display" class="time-display" aria-hidden="true"></div>
@@ -129,8 +138,21 @@
         <button id="reset-zone" class="text-button reset-zone" hidden>Use device timezone</button>
       </section>
 
+      <section class="settings-section" aria-labelledby="prayer-section-title">
+        <div class="settings-section-heading"><div><p class="eyebrow">03</p><h3 id="prayer-section-title">Prayer times</h3></div><p>The five prayers for your main city.</p></div>
+        <label class="setting-row" for="show-prayers"><span class="setting-label"><svg aria-hidden="true"><use href="#i-prayer"/></svg>Show prayer times</span><input type="checkbox" id="show-prayers" class="switch" aria-controls="prayer-options"></label>
+        <div id="prayer-options" hidden>
+          <p id="prayer-location-note" class="prayer-note"></p>
+          <button id="prayer-change-city" class="text-button">Choose main city</button>
+          <p id="prayer-source-note" class="prayer-note">AlAdhan. Times are shown as returned by the source.</p>
+          <p class="prayer-note">Uses AlAdhan's location default. Times are displayed unchanged.</p>
+          <p class="prayer-note">Prayer start times, not congregation times. AlAdhan's published methods can differ from an official local timetable.</p>
+          <p class="prayer-note">Times from <a href="https://aladhan.com/calculation-methods" target="_blank" rel="noopener noreferrer">AlAdhan</a>. Your selected city is sent when enabled. Saved for the day and refreshed after midnight in that city.</p>
+        </div>
+      </section>
+
       <section class="settings-section" aria-labelledby="appearance-section-title">
-        <div class="settings-section-heading"><div><p class="eyebrow">03</p><h3 id="appearance-section-title">Appearance</h3></div><p>Set the mood, palette, and contrast.</p></div>
+        <div class="settings-section-heading"><div><p class="eyebrow">04</p><h3 id="appearance-section-title">Appearance</h3></div><p>Set the mood, palette, and contrast.</p></div>
         <fieldset><legend>Mode</legend><div class="segmented"><button data-setting="theme" data-value="dark" aria-pressed="true"><svg><use href="#i-moon"/></svg>Dark</button><button data-setting="theme" data-value="light" aria-pressed="false"><svg><use href="#i-sun"/></svg>Light</button></div></fieldset>
         <details id="themes-section" class="extra-settings"><summary><span class="summary-label"><svg><use href="#i-brush"/></svg>Themes</span> <span id="active-theme" class="summary-value">Graphite</span></summary>
           <div class="theme-filters" role="group" aria-label="Filter themes"><button data-theme-filter="all" aria-pressed="true">All</button><button data-theme-filter="dark" aria-pressed="false">Dark</button><button data-theme-filter="light" aria-pressed="false">Light</button></div>
@@ -148,7 +170,7 @@
       </section>
 
       <section class="settings-section" aria-labelledby="world-section-title">
-        <div class="settings-section-heading"><div><p class="eyebrow">04</p><h3 id="world-section-title">World clocks</h3></div><p>Keep other cities close at hand.</p></div>
+        <div class="settings-section-heading"><div><p class="eyebrow">05</p><h3 id="world-section-title">World clocks</h3></div><p>Keep other cities close at hand.</p></div>
         <div class="section-heading"><h2><svg><use href="#i-globe"/></svg>Saved cities</h2><button id="settings-add-world" class="text-button">Add city <span aria-hidden="true">+</span></button></div>
         <p class="muted empty-message">Select a city to make it the main clock. Drag to reorder.</p>
         <p id="saved-empty" class="muted empty-message">No cities added yet.</p>
@@ -158,7 +180,7 @@
       </section>
 
       <section class="settings-section" aria-labelledby="behavior-section-title">
-        <div class="settings-section-heading"><div><p class="eyebrow">05</p><h3 id="behavior-section-title">Behavior</h3></div><p>Control the chrome and the screen.</p></div>
+        <div class="settings-section-heading"><div><p class="eyebrow">06</p><h3 id="behavior-section-title">Behavior</h3></div><p>Control the chrome and the screen.</p></div>
         <label class="setting-row" for="auto-hide"><span>Auto-hide controls</span><input type="checkbox" id="auto-hide" class="switch" checked></label>
         <div class="setting-row"><label for="control-style">Controls</label><select id="control-style"><option value="subtle">Subtle</option><option value="standard">Standard</option></select></div>
         <label class="setting-row" for="show-hints"><span>Show keyboard hints</span><input type="checkbox" id="show-hints" class="switch"></label>

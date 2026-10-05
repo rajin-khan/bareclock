@@ -652,3 +652,80 @@ button.primary-button:hover:not(:disabled),button.primary-button:focus-visible {
 .calendar-dates::before,.calendar-dates::after { content:""; flex:0 0 calc(50% - var(--calendar-card-width)/2 - 10px); }
 
 .calendar-dates { mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent); }
+
+/* An open solar rhythm, with the current prayer held in a small orbit. */
+.prayer-enabled .main-clock { container-type:size; grid-template-rows:auto minmax(0,1fr); gap:24px; --prayer-face-height:max(50px,calc(100cqh - 310px)); }
+.prayer-enabled:has(#calendar-dates:not([hidden])) .main-clock { --prayer-face-height:max(40px,calc(100cqh - 370px)); }
+.prayer-enabled .clock-face { margin-top:0; translate:none; }
+.prayer-enabled .clock-face > .place { margin-top:18px; font-size:clamp(13px,1.6cqw,18px); }
+.prayer-enabled .time-display { font-size:calc(min(33cqw,var(--prayer-face-height),460px) * var(--clock-scale)); }
+.prayer-enabled .time-display.has-seconds { font-size:calc(min(23cqw,var(--prayer-face-height),330px) * var(--clock-scale)); }
+.prayer-enabled .time-display.style-flip,.prayer-enabled .time-display.style-digital { font-size:calc(min(23cqw,var(--prayer-face-height) * .75,310px) * var(--clock-scale)); }
+.prayer-enabled .time-display.style-flip.has-seconds,.prayer-enabled .time-display.style-digital.has-seconds { font-size:calc(min(16cqw,var(--prayer-face-height) * .75,230px) * var(--clock-scale)); }
+.prayer-enabled .time-display.style-dial,.prayer-enabled .time-display.style-halo { font-size:calc(min(44cqw,var(--prayer-face-height),340px) * var(--clock-scale)); }
+.prayer-enabled .time-display.style-stack { font-size:calc(min(24cqw,var(--prayer-face-height) * .55,250px) * var(--clock-scale)); }
+.prayer-enabled .map-face { max-height:var(--prayer-face-height); max-width:min(100%,calc(var(--prayer-face-height) * 2)); }
+.prayer-enabled .map-time-main { font-size:calc(min(30cqw,var(--prayer-face-height) * .6,360px) * var(--clock-scale)); }
+.prayer-bar { width:min(100%,780px); align-self:start; padding:6px 0 0; }
+.prayer-heading { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 0 18px; color:var(--display-details,var(--muted)); }
+.prayer-heading h2 { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:500; white-space:nowrap; }
+.prayer-heading svg { width:19px; height:19px; }
+.prayer-heading p { margin:0; font-size:11px; line-height:1.5; text-align:right; text-wrap:balance; }
+.prayer-list { position:relative; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:8px; list-style:none; padding:0; margin:0; }
+.prayer-list::before { content:""; position:absolute; top:21px; inset-inline:10%; height:1px; background:var(--display-line,var(--line)); mask-image:linear-gradient(to right,transparent,#000 12%,#000 88%,transparent); }
+.prayer-item { position:relative; display:flex; flex-direction:column; align-items:center; min-width:0; gap:7px; color:var(--display-details,var(--muted)); }
+.prayer-symbol { position:relative; display:grid; place-items:center; width:42px; height:42px; margin-bottom:3px; border:1px solid transparent; border-radius:50%; background:var(--display-background,var(--bg)); color:var(--display-details,var(--muted)); }
+.prayer-symbol svg { width:22px; height:22px; stroke-width:1.35; }
+.prayer-name { font-size:12px; line-height:1.25; font-weight:500; }
+.prayer-time { display:flex; align-items:baseline; justify-content:center; gap:4px; color:var(--display-details,var(--muted)); font-size:clamp(17px,2.6cqw,27px); font-weight:450; font-variant-numeric:tabular-nums; letter-spacing:-.035em; line-height:1.1; white-space:nowrap; }
+.prayer-period { font-size:.42em; font-weight:500; letter-spacing:.02em; }
+.prayer-period:empty { display:none; }
+.prayer-badge { min-height:12px; font-size:8px; line-height:1.5; font-weight:600; text-transform:uppercase; letter-spacing:.1em; }
+.prayer-item.is-current .prayer-symbol { color:var(--prayer-text,var(--fg)); border-color:color-mix(in srgb,var(--prayer-text,var(--fg)) 55%,transparent); box-shadow:0 0 0 5px color-mix(in srgb,var(--display-time,var(--fg)) 5%,transparent),0 0 28px color-mix(in srgb,var(--display-time,var(--fg)) 10%,transparent); }
+.prayer-item.is-current .prayer-symbol::after { content:""; position:absolute; top:1px; right:4px; width:5px; height:5px; border-radius:50%; background:var(--prayer-text,var(--fg)); box-shadow:0 0 0 3px var(--display-background,var(--bg)); }
+.prayer-item.is-current .prayer-name,.prayer-item.is-current .prayer-time,.prayer-item.is-current .prayer-badge { color:var(--prayer-text,var(--fg)); }
+.prayer-item.is-current .prayer-time { font-weight:650; }
+.prayer-item.is-current .prayer-badge::before { content:""; display:inline-block; width:4px; height:4px; margin:0 5px 2px 0; border-radius:50%; background:currentColor; }
+.prayer-item.is-past:not(.is-current) .prayer-symbol svg { opacity:.68; }
+.prayer-message { display:flex; align-items:center; justify-content:center; gap:14px; margin-top:12px; color:var(--display-details,var(--muted)); font-size:11px; line-height:1.5; }
+.prayer-message .text-button { color:var(--display-time,var(--fg)); min-height:40px; flex-shrink:0; }
+.prayer-note { margin:6px 0 8px; color:var(--muted); font-size:11px; line-height:1.6; }
+.prayer-note a { color:inherit; text-underline-offset:3px; }
+@media (prefers-reduced-motion:no-preference) { .prayer-symbol,.prayer-time { transition:color .25s,border-color .25s,box-shadow .25s; } }
+@media (max-width:700px) {
+  .prayer-enabled .main-clock { gap:18px; --prayer-face-height:max(50px,calc(100cqh - 250px)); }
+  .prayer-enabled:has(#calendar-dates:not([hidden])) .main-clock { --prayer-face-height:max(40px,calc(100cqh - 310px)); }
+  .prayer-enabled .time-display.style-stack { font-size:calc(min(58cqw,var(--prayer-face-height) * .55,240px) * var(--clock-scale)); }
+  .prayer-enabled .time-display.style-dial,.prayer-enabled .time-display.style-halo { font-size:calc(min(90cqw,var(--prayer-face-height),330px) * var(--clock-scale)); }
+  .prayer-bar { padding-top:0; }
+  .prayer-list { gap:4px; }
+  .prayer-list::before { top:17px; }
+  .prayer-heading { margin-bottom:16px; gap:10px; }
+  .prayer-heading h2 { font-size:11px; gap:6px; }
+  .prayer-heading p { font-size:10px; }
+  .prayer-item { gap:6px; }
+  .prayer-symbol { width:34px; height:34px; margin-bottom:2px; }
+  .prayer-symbol svg { width:19px; height:19px; }
+  .prayer-name { font-size:10px; }
+  .prayer-time { gap:2px; font-size:clamp(13px,3.5cqw,21px); }
+  .prayer-period { font-size:.5em; }
+  .prayer-badge { font-size:7px; letter-spacing:.03em; }
+}
+@media (max-height:560px) {
+  .prayer-enabled .main-clock { gap:10px; --prayer-face-height:max(40px,calc(100cqh - 165px)); }
+  .prayer-enabled:has(#calendar-dates:not([hidden])) .main-clock { --prayer-face-height:max(30px,calc(100cqh - 215px)); }
+  .prayer-heading { margin-bottom:8px; }
+  .prayer-heading h2,.prayer-heading p { font-size:10px; }
+  .prayer-heading svg { width:16px; height:16px; }
+  .prayer-list::before { top:13px; }
+  .prayer-symbol { width:26px; height:26px; margin-bottom:1px; }
+  .prayer-symbol svg { width:17px; height:17px; }
+  .prayer-item { gap:4px; }
+  .prayer-name { font-size:10px; }
+  .prayer-time { font-size:clamp(12px,2.6cqw,18px); }
+  .prayer-enabled .clock-face > .place { margin-top:8px; font-size:12px; }
+}
+@media (max-width:700px) and (min-height:561px) {
+  .app.prayer-enabled:has(#world-rail:not([hidden])) { height:auto; grid-template-rows:80px auto 68px; }
+  .prayer-enabled:has(#world-rail:not([hidden])) .main-clock { min-height:400px; }
+}

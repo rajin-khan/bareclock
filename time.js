@@ -152,7 +152,8 @@ export function swapWorldCity(preferences, selected, deviceZone) {
   };
   const index = preferences.cities.findIndex(city => sameCity(city, selected));
   if (index < 0) return preferences;
-  const local = isDeviceCity({ zone: selected.zone, cityName: selected.name }, deviceZone);
+  // Prayer times need the selected city even when it shares the device timezone.
+  const local = isDeviceCity({ zone: selected.zone, cityName: selected.name }, deviceZone) && !(preferences.showPrayers && selected.country);
   return {
     ...preferences,
     zone: local ? null : selected.zone, cityName: local ? '' : selected.name, cityId: local ? '' : selected.id || '',
@@ -171,6 +172,7 @@ export function normalizePreferences(raw) {
     ...(typeof c.region === 'string' ? { region: c.region.slice(0, 200) } : {}),
   })) : [];
   return {
+    showPrayers: p.showPrayers === true,
     style: oneOf('style', ['simple', 'flip', 'digital', 'dial', 'stack', 'halo', 'horizon', 'world'], 'simple'),
     theme: oneOf('theme', ['dark', 'light'], 'dark'),
     colors: normalizeColors(p.colors),

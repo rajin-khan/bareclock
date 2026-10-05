@@ -27,3 +27,13 @@ Use browser developer tools to unregister the service worker when testing uncach
 ## Current verification limits
 
 The initial browser checks covered all eight faces, desktop and resized mobile layouts, themes, city swaps, first-use help, and offline reopening. Physical mobile devices, obsolete browser engines, and a successful screen wake lock grant have not been verified. Modern browsers are the supported baseline.
+
+## Prayer times
+
+- Enable Prayer times in Settings. With only a device timezone, select a main city before requesting times.
+- Check all five prayers, the current-prayer highlight and secondary next-prayer label, and the city beneath the clock. Change the main city directly and by swapping world clocks.
+- Confirm requests omit method, school, high-latitude rules, and tune parameters. The displayed times must match the API response unchanged.
+- Reload and verify today's times return without another API request. Toggle the feature and change display settings without refetching.
+- Check a midnight rollover in the selected timezone, the month/year boundary, tomorrow's Fajr after Isha, and a late Isha after midnight.
+- Check a failed request, Retry, blocked storage, and cached reopening without a connection. Failure should not repeatedly request on clock ticks.
+- Check desktop, 320px portrait, and short landscape layouts, with calendar cards and world clocks. Confirm the five prayers stay readable in light, dark, and custom themes.

@@ -11,11 +11,16 @@ A clock for your browser. Open a tab, pick a face, and go fullscreen.
 - Eight clock faces: Simple, Flip, Digital, Dial, Stack, Halo, Horizon, and World.
 - 24 themes, including Dracula, Catppuccin, Nord, and Rosé Pine, plus custom colors.
 - World clocks with search across 235,669 cities and towns. Choose Compact or Large tiles. Click a world clock to swap it with the main clock.
+- Optional Islamic prayer times for the main city, with all five prayers and the current prayer highlighted in an open strip. Times come directly from AlAdhan's location default.
 - Adjustable size, digit weight, date display, seconds, and 12- or 24-hour time.
 - Fullscreen, optional screen wake lock, and layouts for desktop and mobile.
 - Offline use after the first successful load. The full city directory is available offline after you load it once.
 
 Settings stay in your browser. No accounts, analytics, external fonts, or time API. The clock uses your device's time and the browser's timezone rules.
+
+Prayer times are off by default. When enabled for a selected city, one request to AlAdhan gets the surrounding days and is saved in your browser for that local date. The clock refreshes after the city's midnight, when you change the city, or when you explicitly retry a failed request. The highlight changes locally without polling. Today's saved times remain available offline. New dates need a connection.
+
+AlAdhan's prayer start times can differ from mosque timetables and are separate from congregation times. See the [source research and accuracy notes](docs/prayer-times.md).
 
 ## Controls
 

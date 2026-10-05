@@ -2,6 +2,7 @@ import { localZone, uses12Hours, timeAt, dateAt, calendarDates, relativeDay, nex
 import { palettes, themeCatalog, matchingTheme, displayColors, controlColor, contrast, mix, validColor } from './appearance.js';
 import { createColorPicker } from './color-picker.js';
 import { cityCatalog, searchCities, zoneName } from './cities.js';
+import { prayers, prayerRequest, prayerDisplay, createPrayerCache } from './prayers.js';
 
 const $ = id => document.getElementById(id);
 const storageKey = 'clock.preferences.v1';
@@ -32,6 +33,10 @@ let cityWorker, workerIdleTimer, searchDebounce;
 let searchRequest = 0, cityLimit = 60, directoryReady = false;
 let hour12Key = '', hour12Value = false;
 let draggedWorldIndex = -1;
+let prayerStorage;
+try { prayerStorage = localStorage; } catch {}
+const prayerCache = createPrayerCache((...args) => fetch(...args), prayerStorage);
+let currentPrayerRequest = '', prayerCalendar = null, prayerError = '', prayerLoading = false;
 
 function el(tag, className, text) {
   const element = document.createElement(tag);
@@ -110,6 +115,15 @@ function syncControls() {
   $('date-display').hidden = !prefs.showDate || prefs.dateStyle === 'cards';
   $('calendar-dates').hidden = !prefs.showDate || prefs.dateStyle !== 'cards';
   document.querySelector('.place').hidden = !prefs.showCity;
+  $('app').classList.toggle('prayer-enabled', prefs.showPrayers);
+  $('prayer-bar').hidden = !prefs.showPrayers;
+  $('show-prayers').checked = prefs.showPrayers;
+  $('prayer-options').hidden = !prefs.showPrayers;
+  $('prayer-location-note').textContent = prayerRequest(prefs, mainZone(), dateAt(new Date(), mainZone(), 'numeric')) ? `Following ${[prefs.cityName, prefs.cityCountry].filter(Boolean).join(', ')}.` : 'Choose a main city first. A device timezone cannot identify your location.';
+  const face = document.querySelector('.clock-face');
+  const place = document.querySelector('.place');
+  if (prefs.showPrayers && face.lastElementChild !== place) face.append(place);
+  else if (!prefs.showPrayers && place.nextElementSibling !== $('time-display')) face.insertBefore(place, $('time-display'));
   document.querySelectorAll('[data-size]').forEach(button => button.setAttribute('aria-pressed', String(Number(button.dataset.size) === prefs.clockSize)));
   document.querySelectorAll('[data-setting]').forEach(button => button.setAttribute('aria-pressed', String(prefs[button.dataset.setting] === button.dataset.value)));
   $('hour-format').value = prefs.hourFormat;
@@ -152,6 +166,7 @@ function syncAppearance() {
   root.style.setProperty('--display-hover', mix(colors.background, colors.time, .08));
   root.style.setProperty('--display-line', mix(colors.background, controlColor(colors.background), .25));
   root.style.setProperty('--display-tile-detail', controlColor(colors.tile, 4.5));
+  root.style.setProperty('--prayer-text', contrast(colors.time, colors.background) >= 4.5 ? colors.time : controlColor(colors.background, 4.5));
   root.style.setProperty('--guide-bg', colors.background);
   root.style.setProperty('--guide-panel', panel);
   root.style.setProperty('--guide-fg', guideText);
@@ -590,6 +605,7 @@ function render(force = false) {
   renderFace(time, force, now, zone);
   const minuteKey = `${Math.floor(now.getTime() / 60000)}|${zone}`;
   if (force || minuteKey !== lastMainMinute) {
+    renderPrayers(now, zone);
     renderCalendar(now, zone);
     const date = dateAt(now, zone, prefs.dateStyle);
     if (date !== lastDate || force) { $('date-display').textContent = date; lastDate = date; }
@@ -616,6 +632,67 @@ function render(force = false) {
     });
     lastWorldMinute = minuteKey;
   }
+}
+
+function buildPrayerStrip() {
+  for (const [index, [id, name]] of prayers.entries()) {
+    const item = el('li', 'prayer-item');
+    const symbol = el('span', 'prayer-symbol');
+    symbol.setAttribute('aria-hidden', 'true');
+    symbol.append(icon(['dawn', 'sun', 'afternoon', 'sunset', 'prayer'][index]));
+    const time = el('time', 'prayer-time');
+    time.append(el('span', 'prayer-digits', '--:--'), el('small', 'prayer-period'));
+    item.append(symbol, el('span', 'prayer-name', name), time, el('span', 'prayer-badge'));
+    $('prayer-list').append(item);
+  }
+}
+
+function renderPrayers(now, zone, retry = false) {
+  if (!prefs.showPrayers) { currentPrayerRequest = ''; return; }
+  const date = dateAt(now, zone, 'numeric');
+  const request = prayerRequest(prefs, zone, date);
+  if (!request) {
+    currentPrayerRequest = ''; prayerCalendar = null; prayerError = ''; prayerLoading = false;
+  } else if (retry || currentPrayerRequest !== request.url) {
+    currentPrayerRequest = request.url;
+    prayerCalendar = null; prayerError = ''; prayerLoading = true;
+    prayerCache.get(request, retry).then(calendar => {
+      if (currentPrayerRequest !== request.url) return;
+      prayerCalendar = calendar; prayerLoading = false; render(true);
+    }).catch(error => {
+      if (currentPrayerRequest !== request.url) return;
+      prayerError = error.name === 'AbortError' ? 'Prayer times took too long to load. Try again.' : error.message;
+      prayerLoading = false; render(true);
+    });
+  }
+  const display = prayerDisplay(prayerCalendar, date, now);
+  $('prayer-bar').setAttribute('aria-busy', String(prayerLoading));
+  $('prayer-message').hidden = Boolean(display);
+  $('prayer-status').textContent = !request ? 'Choose a city to see its prayer times.' : prayerLoading ? 'Loading prayer times for your city...' : prayerError;
+  $('prayer-action').hidden = Boolean(display) || prayerLoading;
+  $('prayer-action').textContent = request ? 'Retry' : 'Choose city';
+  const nextTime = display?.nextTime ? timeAt(new Date(display.nextTime), zone, hour12()) : null;
+  $('prayer-next').textContent = nextTime ? `Next: ${prayers[display.nextIndex][1]} · ${nextTime.hour}:${nextTime.minute}${nextTime.period ? ` ${nextTime.period}` : ''}${display.tomorrow ? ' tomorrow' : ''}` : '';
+  const source = prayerCalendar ? `AlAdhan · ${prayerCalendar.method} · ${prayerCalendar.school.toLowerCase()} Asr` : 'AlAdhan. Times are shown as returned by the source.';
+  $('prayer-bar').title = prayerCalendar ? `${prefs.cityName} · ${source}` : '';
+  $('prayer-source-note').textContent = source;
+  [...$('prayer-list').children].forEach((item, index) => {
+    const value = display?.times[index];
+    const active = Boolean(display && display.currentIndex === index);
+    const past = Boolean(value && Date.parse(value) <= now.getTime());
+    item.classList.toggle('is-current', active);
+    item.classList.toggle('is-past', past);
+    if (active) item.setAttribute('aria-current', 'true');
+    else item.removeAttribute('aria-current');
+    item.querySelector('.prayer-badge').textContent = active ? 'Now' : display?.nextIndex === index ? (display.tomorrow ? 'Tomorrow' : display.lastNight ? 'Last night' : '') : '';
+    const time = item.querySelector('time');
+    if (value) {
+      const parts = timeAt(new Date(value), zone, hour12());
+      time.querySelector('.prayer-digits').textContent = `${parts.hour}:${parts.minute}`;
+      time.querySelector('.prayer-period').textContent = parts.period;
+      time.dateTime = value;
+    } else { time.querySelector('.prayer-digits').textContent = '--:--'; time.querySelector('.prayer-period').textContent = ''; time.removeAttribute('datetime'); }
+  });
 }
 
 function schedule() {
@@ -927,6 +1004,11 @@ $('world-button').addEventListener('click', () => prefs.cities.length ? update('
 $('add-world').addEventListener('click', () => openPicker());
 $('settings-add-world').addEventListener('click', () => openPicker());
 $('change-zone').addEventListener('click', () => openPicker('main'));
+$('prayer-change-city').addEventListener('click', () => openPicker('main'));
+$('prayer-action').addEventListener('click', () => {
+  if (!prayerRequest(prefs, mainZone(), dateAt(new Date(), mainZone(), 'numeric'))) openPicker('main');
+  else renderPrayers(new Date(), mainZone(), true);
+});
 $('reset-zone').addEventListener('click', () => selectZone(null));
 $('local-button').addEventListener('click', () => selectZone(null));
 $('city-search').addEventListener('input', () => {
@@ -987,12 +1069,12 @@ $('reset-colors').addEventListener('click', () => update('colors', {}));
 document.querySelectorAll('[data-size]').forEach(button => button.addEventListener('click', () => update('clockSize', Number(button.dataset.size))));
 $('reset-display').addEventListener('click', () => {
   const defaults = normalizePreferences(null);
-  for (const key of ['style','theme','colors','controls','showHints','hourFormat','clockSize','weight','seconds','showDate','showCity','showPeriod','dateStyle','autoHide','tileSize']) prefs[key] = defaults[key];
+  for (const key of ['style','theme','colors','controls','showHints','hourFormat','clockSize','weight','seconds','showDate','showCity','showPeriod','dateStyle','autoHide','tileSize','showPrayers']) prefs[key] = defaults[key];
   save(); syncControls(); render(true); schedule(); showControls();
 });
 document.querySelectorAll('[data-close]').forEach(button => button.addEventListener('click', () => $(button.dataset.close).close()));
 document.querySelectorAll('[data-setting]').forEach(button => button.addEventListener('click', () => update(button.dataset.setting, button.dataset.value)));
-for (const [id, key] of [['seconds', 'seconds'], ['show-world', 'showWorld'], ['keep-awake', 'keepAwake'], ['show-date', 'showDate'], ['show-city', 'showCity'], ['show-period', 'showPeriod'], ['auto-hide', 'autoHide'], ['show-hints', 'showHints']]) $(id).addEventListener('change', e => update(key, e.target.checked));
+for (const [id, key] of [['seconds', 'seconds'], ['show-world', 'showWorld'], ['keep-awake', 'keepAwake'], ['show-date', 'showDate'], ['show-city', 'showCity'], ['show-period', 'showPeriod'], ['auto-hide', 'autoHide'], ['show-hints', 'showHints'], ['show-prayers', 'showPrayers']]) $(id).addEventListener('change', e => update(key, e.target.checked));
 for (const [id, key] of [['hour-format', 'hourFormat'], ['tile-size', 'tileSize'], ['digit-weight', 'weight'], ['date-style', 'dateStyle'], ['control-style', 'controls']]) $(id).addEventListener('change', e => update(key, e.target.value));
 document.querySelectorAll('dialog').forEach(dialog => {
   let pointerDownOutside = false;
@@ -1021,6 +1103,7 @@ function resume() { deviceZone = localZone(); render(true); schedule(); syncWake
 document.addEventListener('visibilitychange', () => { if (!document.hidden) resume(); else { clearTimeout(ticker); clearTimeout(idleTimer); idleTimer = null; syncWakeLock(); } });
 window.addEventListener('focus', resume);
 window.addEventListener('pageshow', resume);
+window.addEventListener('online', () => { if (prefs.showPrayers && prayerError) renderPrayers(new Date(), mainZone(), true); });
 window.addEventListener('storage', event => {
   if (event.key !== storageKey && event.key !== null) return;
   try { prefs = normalizePreferences(JSON.parse(event.newValue)); } catch { prefs = normalizePreferences(null); }
@@ -1031,6 +1114,7 @@ window.addEventListener('storage', event => {
 document.querySelector('.preview-digital').replaceChildren(digitalDigit('1'), digitalDigit('2'), el('span', 'preview-separator', ':'), digitalDigit('4'), digitalDigit('8'));
 document.querySelectorAll('.style-preview').forEach(preview => preview.setAttribute('aria-hidden', 'true'));
 buildThemes();
+buildPrayerStrip();
 buildRail();
 syncControls();
 resume();
